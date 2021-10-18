@@ -24,7 +24,7 @@ function app(window) {
 
         let rawData = tag.getAttribute('data-config');
         rawData = rawData.replace(/'/g, "\"");
-        console.log(rawData);
+        // console.log(rawData);
         let data = JSON.parse(rawData);
 
         window[widgetName] = data.name;
@@ -44,11 +44,11 @@ function app(window) {
     window[widgetConfigName] = defaultconfig;
 
     if (placeholder) {
-        console.log(`${widgetName} placeholder found`);
+        // console.log(`${widgetName} placeholder found`);
 
         let queue = placeholder.q;
         if (queue) {
-            console.log(`${widgetName} placeholder queue found`);
+            // console.log(`${widgetName} placeholder queue found`, queue);
 
             for (var i = 0; i < queue.length; i++) {
                 apiHandler(queue[i][0], queue[i][1]);
@@ -60,16 +60,16 @@ function app(window) {
 /**
     Method that handles all API calls
 */
-function apiHandler(api, params) {
+function apiHandler(api, ...params) {
     if (!api) throw Error('API method required');
     api = api.toLowerCase();
     let config = window[widgetConfigName];
 
-    console.log(`Handling API call ${api}`, params, config);
+    // console.log(`Handling API call ${api}`, params, config);
 
     switch (api) {
         case 'init':
-            config = Object.assign({}, config, params);
+            config = Object.assign({}, config, ...params);
             window[widgetConfigName] = config;
 
             // get a reference to the created widget component so we can
@@ -77,9 +77,9 @@ function apiHandler(api, params) {
             widgetComponent = React.createRef();
             ReactDOM.render(<Widget ref={widgetComponent} />, document.getElementById(config.targetElementId));
             break;
-        case 'message':
+        case 'swap':
             // Send the message to the current widget instance
-            widgetComponent.current.setMessage(params);
+            widgetComponent.current.setMessage(...params);
             break;
         default:
             throw Error(`Method ${api} is not supported`);

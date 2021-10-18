@@ -1,24 +1,25 @@
 <html>
 
 <head>
-    <title>Demo page of the widget</title>
+    <title>Demo NFT Marketplace</title>
 </head>
 
 <body>
-    <h1>Lorem ipsum dolor sit amet augue</h1>
-    <h2>Fusce gravida vehicula vestibulum tortor pulvinar</h2>
-    <p>Orci purus ante excepteur nunc nascetur rhoncus taciti ut. Ornare vitae sed. Amet suspendisse integer rutrum
-        aliquet
-        venenatis. Nec sed nullam mauris magna vel pretium non tristique. Porta justo ac dictumst aliquip blandit.
-        Libero
-        nec eu dolor eget volutpat. Magna nulla neque. Fames tempus lorem duis orci ipsum.</p>
+    <h1>Click to buy an NFT with LN Bitcoin</h1>
+    <h2>Download Hiro wallet extension for your browser</h2>
+    <p>And then click below to get start swap LN -> STX</p>
 
+    <p>Merchant (NFT Market) would initiate the swap on the widget as below:<br/>
+        <code>
+            lnswap('swap', 'user stx address', 'amount in STX');<br/>
+        e.g. lnswap('swap', 'SP1GH2VFAZ7ZB02JHBTMJSQYKJ83ESCNBZ0S3198R', '50');<br/><br/>
+        </code>
+    </p>
 
     <div id="root"></div>
-    
-    <script src="./widget.js"  id="Simple-Widget-Script" data-config="{'name': 'w1', 'config': {'targetElementId': 'root'}}" ></script>
+    <script src="./widget.js"  id="LNSwap-Widget-Script" data-config="{'name': 'lnswap', 'config': {'targetElementId': 'root'}}" ></script>
 
-    <div><button onclick="w1('message', 'Hello world!');">Send Message</button></div>
+    <div><button onclick="lnswap('swap', 'SP1GH2VFAZ7ZB02JHBTMJSQYKJ83ESCNBZ0S3198R', '50');">Launch LNSwap Widget</button></div>
 </body>
 
 </html>

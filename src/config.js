@@ -1,6 +1,8 @@
 function getConfig() {
     return {
-        name: "Simple-Widget"
+        name: "LNSwap-Widget",
+        apiUrl: "https://lnswap.org:9001",
+        pairId: "BTC/STX"
     }
 }
 

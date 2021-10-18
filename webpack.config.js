@@ -29,6 +29,8 @@ module.exports = (env) => {
         devServer: {
             contentBase: bundleOutputDir
         },
-        plugins: [new copyWebpackPlugin([{ from: 'demo/' }])]
+        plugins: [
+            new copyWebpackPlugin([{ from: 'demo/' }])
+        ]
     }];
 };
