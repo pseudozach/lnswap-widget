@@ -14,6 +14,47 @@ import InputAdornment from '@mui/material/InputAdornment';
 import QRCode from "react-qr-code";
 import CircularProgress from '@mui/material/CircularProgress';
 import Divider from '@mui/material/Divider';
+import LoadingButton from '@mui/lab/LoadingButton';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SendIcon from '@mui/icons-material/Send';
+import LockIcon from '@mui/icons-material/Lock';
+
+import { StacksTestnet, StacksMocknet, StacksMainnet } from '@stacks/network';
+import { openContractCall } from '@stacks/connect';
+import {
+  bufferCV,
+  // makeStandardSTXPostCondition,
+  FungibleConditionCode,
+  PostConditionMode,
+  // createSTXPostCondition,
+  // parsePrincipalString,
+  // StacksMessageType,
+  // PostConditionType
+  makeContractSTXPostCondition,
+  createContractPrincipal,
+  parsePrincipalString,
+  StacksMessageType,
+  PostConditionType,
+} from '@stacks/transactions';
+
+import bigInt from 'big-integer';
+import { BN } from 'bn.js';
+
+let mocknet = new StacksMocknet();
+// mocknet.coreApiUrl = 'http://localhost:3999';
+const testnet = new StacksTestnet();
+const mainnet = new StacksMainnet();
+let activeNetwork = mocknet
+
+let stacksNetworkType = "mocknet";
+
+if(stacksNetworkType==="mocknet"){
+  activeNetwork = mocknet
+} else if(stacksNetworkType==="testnet"){
+  activeNetwork = testnet
+} else if(stacksNetworkType==="mainnet"){
+  activeNetwork = mainnet
+}
 
 const widgetName = Config.name;
 const apiUrl = Config.apiUrl;
@@ -42,6 +83,10 @@ const customStyles = {
     p: 4,
     width: 'fit-content',
   };
+
+  const nounderline = {
+      textDecoration: "none",
+  }
   
   const randomBytes = size => {
     const bytes = Buffer.allocUnsafe(size);
@@ -65,13 +110,25 @@ class Widget extends React.Component {
             modalIsOpen: false,
             claimAddress: '',
             stxAmount: '10',
-            invoiceAmount: '...',
+            invoiceAmount: 0,
             invoiceAmountBTC: '...',
             preimage: preimage.toString('hex'),
             preimageHash: preimageHash.toString('hex'),
             rate: '30000',
             fee: '5',
-            qrValue: 'invoice',
+            paymentLink: 'invoice',
+            showLoading: true,
+            showButton: false,
+            swapId: '',
+            swapObj: {},
+            invoice: '',
+            showStatus: false,
+            swapStatus: '',
+            statusColor: 'success',
+            buttonText: 'Claim',
+            showQr: true,
+            buttonLoading: false,
+            showComplete: false,
         };
     }
 
@@ -129,7 +186,7 @@ class Widget extends React.Component {
                             disabled
                             sx={{ m: 1, width: '25ch', }}
                             id="outlined-required"
-                            label="BTC/STX Rate"
+                            label={pairId + " Rate"}
                             value={this.state.rate}
                             />
                             <TextField
@@ -194,12 +251,63 @@ class Widget extends React.Component {
                                 textAlign: 'center',
                             }}
                             >
-                            <QRCode 
-                                value={this.state.qrValue} 
-                            />
+                            {this.state.showQr ? (<a href={this.state.paymentLink}>
+                                <QRCode 
+                                    value={this.state.invoice} 
+                                />
+                            </a>) : <LockIcon color="theme.palette.success.dark" fontSize="large" sx={{ fontSize: '10em'}} />}
+                            {this.state.showComplete ? (
+                                <CheckCircleIcon color="success" fontSize="large" sx={{ fontSize: '10em'}} />
+                            ) : null}
+                            {this.state.showStatus ? (
+                                <Typography variant="body1" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center' }} color={this.state.statusColor}>
+                                {this.state.swapStatus}
+                                </Typography>
+                            ) : null}
                         </Box>
                         <Divider sx={{ m: 2 }} />
-                        <CircularProgress sx={{ mx: 'auto', textAlign: 'center', display: 'block', margin: 'auto' }} />
+                        {this.state.showLoading ? (<CircularProgress sx={{ mx: 'auto', textAlign: 'center', display: 'block', margin: 'auto' }} />) : null}
+                        {this.state.showButton ? (
+                            <Box
+                                sx={{mx: 'auto',textAlign: 'center',}}>
+                                <LoadingButton
+                                    sx={{ background: '#263238', mx: 'auto'}}
+                                    onClick={this.claimStx}
+                                    endIcon={<SendIcon />}
+                                    loading={this.state.buttonLoading}
+                                    loadingPosition="end"
+                                    variant="contained"
+                                    size="large"
+                                >
+                                {this.state.buttonText}
+                                </LoadingButton>
+                            </Box>
+                        ) :  null}
+                        <Box
+                            component="form"
+                            sx={{
+                                '& .MuiTextField-root': { m: 1, width: '25ch', color: 'gray' },
+                            }}
+                            noValidate
+                            autoComplete="off"
+                            >
+                            <Typography 
+                                variant="caption" 
+                                display="block" 
+                                gutterBottom
+                                sx={{ float: 'left' }}
+                            >
+                                Swap ID: {this.state.swapId}
+                            </Typography>
+                            <Typography 
+                                variant="caption" 
+                                display="block" 
+                                gutterBottom
+                                sx={{ float: 'right' }}
+                            >
+                                powered by <a href="https://LNSwap.org" target="_blank" style={nounderline}>LNSwap.org</a>
+                            </Typography>
+                        </Box>
                     </Box>
                 </Modal>
 
@@ -219,6 +327,9 @@ class Widget extends React.Component {
     //     this.getpairs();
     // }
 
+    handleClick = () => {
+        this.setState({buttonLoading: true,});
+    }
     handleClose = () => {
         console.log(`closeModal `, this.state);
         this.setState({modalIsOpen: false});
@@ -243,20 +354,20 @@ class Widget extends React.Component {
                 const maxLimit = res.pairs[pairId].limits.maximal;
                 const minLimit = res.pairs[pairId].limits.minimal;
                 const fee = res.pairs[pairId].fees.percentage;
-                const invoiceAmount = parseInt((this.state.stxAmount / rate) * 100000000).toString();
+                const invoiceAmount = parseInt((this.state.stxAmount / rate) * 100000000 * (1+(fee/100)) );
                 const invoiceAmountBTC = (this.state.stxAmount / rate).toFixed(8).toString();
-                console.log(`setting fee, rate ${fee}, ${rate}, ${this.state.stxAmount}, ${invoiceAmount}, ${invoiceAmountBTC}`);
+                // console.log(`setting fee, rate ${fee}, ${rate}, ${this.state.stxAmount}, ${invoiceAmount}, ${invoiceAmountBTC}`);
                 
                 // convert rate, populate UI
                 this.setState({rate, fee, invoiceAmount, invoiceAmountBTC});
                 
                 // create swap and show LN invoice
-                
+                this.createswap();
 
                 // $("#minted").text(parseInt(res.result.slice(-2), 16));
             })
             .catch(e => {
-                console.log(`fetch error `, e);
+                console.log(`getpairs error `, e);
                 // return e;
             });     
     }
@@ -269,6 +380,7 @@ class Widget extends React.Component {
             "invoiceAmount": this.state.invoiceAmount,
             "preimageHash": this.state.preimageHash
         }
+        console.log(`creating swap with: `, reqbody);
         fetch(`${apiUrl}/createswap`, {
             method: 'post',
             headers: {
@@ -279,8 +391,110 @@ class Widget extends React.Component {
             }).then(res => res.json())
             .then(res => {
                 console.log("swap created: ", res);
-                // $("#minted").text(parseInt(res.result.slice(-2), 16));
-            });     
+                // id: "U8InKl"
+                // invoice: "lnbc2165060n1pskemqapp54l6hpdcs0t4dpreuwzym9wsqha7f7ra4jll4aywzes8l5h5thq8qdql2djkuepqw3hjq565tqsxzerywfjhxuccqzylxqrrsssp57963jvgs274sk6vkcc5eak0huahhk823000ha9np8fa826fnz38s9qyyssqgdzfrcy6yv0jp564g5tq86nwvfxchenxg7lc48jjaxm34aq0x8ejc5qnwmmtmdrml62n8sh8xu62hmhumrwwlewmyk9yu7c9n5ylkxsp84ryjz"
+                // lockupAddress: "sp2507vnqzc9vbxm7x7kb4sf4qjdjrswhg4v39wpy.stxswap_v7"
+                // onchainAmount: 4950136866
+                // refundAddress: "sp13r6d5p5tye71d81gzqwsd9pgqmqqn54a2yt3by"
+                // timeoutBlockHeight: 34313
+                this.setState({swapId: res.id, invoice: res.invoice, paymentLink: `lightning:${res.invoice}`, swapObj: res, showQr: true});
+                this.listenswap();
+            }).catch(e => {
+                console.log(`createswap error: `, e);
+            });  
+    }
+    listenswap = () => {
+        var thisthing = this;
+        var stream = new EventSource(apiUrl + '/streamswapstatus?id=' + this.state.swapId);
+
+        stream.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            console.log('Swap status update: ' + data.status);
+            switch (data.status) {
+                case "transaction.failed":
+                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Swap failed. Please try again later.', statusColor: 'error', showQr: false});
+                    break;
+
+                case "transaction.confirmed":
+                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Funds locked. Please click to claim.', statusColor: 'success', showButton: true, showQr: false});
+                    break;
+
+                case "transaction.claimed":
+                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Claim successful.', statusColor: 'success'});
+                    break;
+
+                default:
+                    break;
+            }
+            // data: {"status":"transaction.mempool"}
+            // data: {"status":"invoice.paid"}
+        };
+    }
+
+    claimStx = async() => {      
+        this.setState({buttonLoading: true,});
+        console.log("swapObj: ", this.state.swapObj);
+        let contractAddress = this.state.swapObj.lockupAddress.split(".")[0].toUpperCase();
+        let contractName = this.state.swapObj.lockupAddress.split(".")[1]
+        console.log("claimStx ", contractAddress, contractName)
+      
+        let preimage = this.state.preimage;
+        let amount = this.state.swapObj.onchainAmount;
+        let timeLock = this.state.swapObj.timeoutBlockHeight;
+      
+        console.log(`Claiming ${amount} Stx with preimage ${preimage} and timelock ${timeLock}`);
+      
+        console.log("amount, decimalamount: ", amount)
+        let smallamount = parseInt(amount / 100) + 1
+        console.log("smallamount: " + smallamount)
+      
+        let swapamount = smallamount.toString(16).split(".")[0] + "";
+        let postConditionAmount = Math.ceil(parseInt(smallamount) / 100);
+
+        const postConditionAddress = contractAddress;
+        const postConditionCode = FungibleConditionCode.LessEqual;
+        const postConditions = [
+          makeContractSTXPostCondition(
+            postConditionAddress,
+            contractName,
+            postConditionCode,
+            postConditionAmount
+          )
+        ];
+      
+        console.log("postConditions: " + contractAddress, contractName, postConditionCode, postConditionAmount)
+      
+      
+        let paddedamount = swapamount.padStart(32, "0");
+        let paddedtimelock = timeLock.toString(16).padStart(32, "0");
+        console.log("amount, timelock ", smallamount, swapamount, paddedamount, paddedtimelock);
+      
+        // (claimStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)))
+        const functionArgs = [
+          bufferCV(Buffer.from(preimage,'hex')),
+          bufferCV(Buffer.from(paddedamount,'hex')),
+          bufferCV(Buffer.from('01','hex')),
+          bufferCV(Buffer.from('01','hex')),
+          bufferCV(Buffer.from(paddedtimelock,'hex')),
+        ];
+        const txOptions = {
+          contractAddress: contractAddress,
+          contractName: contractName,
+          functionName: 'claimStx',
+          functionArgs: functionArgs,
+          // validateWithAbi: true,
+          network: activeNetwork,
+          postConditionMode: PostConditionMode.Allow,
+          // postConditions,
+          // anchorMode: AnchorMode.Any,
+          onFinish: data => {
+            console.log('Stacks claim onFinish:', JSON.stringify(data));
+          },
+          onCancel: data => {
+            console.log('Stacks claim onCancel:', JSON.stringify(data));   
+          }
+        };
+        // await openContractCall(txOptions);
     }
 
 };
