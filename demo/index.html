@@ -1,13 +1,25 @@
 <html>
 
 <head>
-    <title>Simple Embeddable React Widget</title>
+    <title>Demo NFT Marketplace</title>
 </head>
 
 <body>
-    <h1>Simple Embeddable React Widget</h1>
-    <p>Demo #1: <a href="demo_sync.html">synchronous loading</a></p>
-    <p>Demo #2: <a href="demo_async.html">asynchronous loading</a></p>
+    <h1>Welcome to NFTMarket: Click to buy an NFT with LN Bitcoin</h1>
+    <p>1- Download Hiro wallet extension for your browser</p>
+    <p>2- Click below to start swapping LN Bitcoin for STX</p>
+
+    <p>Merchant (NFT Market) would initiate the swap on the widget as below:<br/>
+        <code>
+            lnswap('swap', 'user stx address', 'amount in STX');<br/>
+        e.g. lnswap('swap', 'SP1GH2VFAZ7ZB02JHBTMJSQYKJ83ESCNBZ0S3198R', '50');<br/><br/>
+        </code>
+    </p>
+
+    <div id="root"></div>
+    <script src="./widget.js"  id="LNSwap-Widget-Script" data-config="{'name': 'lnswap', 'config': {'targetElementId': 'root'}}" ></script>
+
+    <div><button onclick="lnswap('swap', 'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF', '5');">Launch LNSwap Widget</button></div>
 </body>
 
 </html>
