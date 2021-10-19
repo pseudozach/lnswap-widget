@@ -5,21 +5,31 @@
 </head>
 
 <body>
-    <h1>Welcome to NFTMarket: Click to buy an NFT with LN Bitcoin</h1>
+    <h2>LNSwap Embeddable Widget Demo</h2>
+    <h3>Welcome to NFTMarket: Click to buy an NFT with LN Bitcoin</h3>
     <p>1- Download Hiro wallet extension for your browser</p>
     <p>2- Click below to start swapping LN Bitcoin for STX</p>
+    <div><button onclick="lnswap('swap', 'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF', '5');">Launch LNSwap Widget</button></div>
 
-    <p>Merchant (NFT Market) would initiate the swap on the widget as below:<br/>
-        <code>
+    <h2>Integration Instructions for Stacks App Developers</h2>
+    <p>Merchant (NFT Market) would integrate the swap tool as below:</p>
+    <pre><code>
+        &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
+        &lt;script src=&quot;https://lnswap-widget.vercel.app/widget.js&quot;  
+                id=&quot;LNSwap-Widget-Script&quot; 
+                data-config=&quot;{'name': 'lnswap', 'config': {'targetElementId': 'root'}}&quot; &gt;
+        &lt;/script&gt;
+    </code></pre>
+    <p>Merchant (NFT Market) would then initiate the swap in their frontend as below:
+        <pre><code>
             lnswap('swap', 'user stx address', 'amount in STX');<br/>
-        e.g. lnswap('swap', 'SP1GH2VFAZ7ZB02JHBTMJSQYKJ83ESCNBZ0S3198R', '50');<br/><br/>
-        </code>
+        e.g. lnswap('swap', 'SP1GH2VFAZ7ZB02JHBTMJSQYKJ83ESCNBZ0S3198R', '50');
+        </code></pre>
     </p>
 
     <div id="root"></div>
     <script src="./widget.js"  id="LNSwap-Widget-Script" data-config="{'name': 'lnswap', 'config': {'targetElementId': 'root'}}" ></script>
 
-    <div><button onclick="lnswap('swap', 'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF', '5');">Launch LNSwap Widget</button></div>
 </body>
 
 </html>
