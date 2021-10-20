@@ -404,7 +404,7 @@ class Widget extends React.Component {
         // console.log(`preimage: ${preimage.toString('hex')}`);
         const preimageHash = crypto.sha256(preimage);
         // console.log(`preimageHash: ${preimageHash}`);
-        this.setState({preimage: preimage.toString('hex'), preimageHash: preimageHash.toString('hex')});
+        this.setState({preimage: preimage.toString('hex'), preimageHash: preimageHash.toString('hex'), showLoading: true, showStatus: false, swapStatus: ''});
         this.createswap();
     }
     setMessage(...message){
