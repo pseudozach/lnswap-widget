@@ -23,7 +23,7 @@ import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 import { StacksTestnet, StacksMocknet, StacksMainnet } from '@stacks/network';
-import { openContractCall } from '@stacks/connect';
+import { AppConfig, UserSession, showConnect, openContractCall } from '@stacks/connect';
 import {
   bufferCV,
   // makeStandardSTXPostCondition,
@@ -39,6 +39,9 @@ import {
   StacksMessageType,
   PostConditionType,
 } from '@stacks/transactions';
+
+const appConfig = new AppConfig(['store_write', 'publish_data']);
+const userSession = new UserSession({ appConfig });
 
 import bigInt from 'big-integer';
 import { BN } from 'bn.js';
@@ -304,7 +307,7 @@ class Widget extends React.Component {
                                 sx={{mx: 'auto',textAlign: 'center',}}>
                                 <LoadingButton
                                     sx={{ mx: 'auto'}}
-                                    onClick={this.claimStx}
+                                    onClick={this.connectStacksWallet}
                                     endIcon={<SendIcon />}
                                     loading={this.state.buttonLoading}
                                     loadingPosition="end"
@@ -360,6 +363,26 @@ class Widget extends React.Component {
     //     this.getpairs();
     // }
 
+    connectStacksWallet = async () => {
+        let thisthing = this;
+        console.log("connectStacksWallet, ", userSession);
+        if(userSession.isUserSignedIn()) {
+        //   let userData = userSession.loadUserData();
+        } else {
+            showConnect({
+                appDetails: {
+                    name: 'LNSwap',
+                    icon: 'https://lnswap.org/favicon.ico',
+                },
+                // redirectTo: '/',
+                finished: () => {
+                    // window.location.reload();
+                    thisthing.claimStx();
+                },
+                userSession: userSession,
+            }); 
+        }
+    }    
     copyToClipboard = () => {
         let thisthing = this;
         navigator.clipboard.writeText(this.state.invoice);
@@ -492,7 +515,7 @@ class Widget extends React.Component {
         };
     }
 
-    claimStx = async() => {      
+    claimStx = async() => {  
         let thisthing = this;
 
         this.setState({buttonLoading: true,});
