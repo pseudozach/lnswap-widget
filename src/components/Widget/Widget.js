@@ -41,12 +41,15 @@ import {
 } from '@stacks/transactions';
 
 const appConfig = new AppConfig(['store_write', 'publish_data']);
-const userSession = new UserSession({ appConfig });
+
+// uncomment when signout testing is needed.
+// let userSession = new UserSession({ appConfig });
+// userSession.signUserOut();
 
 import bigInt from 'big-integer';
 import { BN } from 'bn.js';
 
-let mocknet = new StacksMocknet({url: 'https://3999-azure-cricket-glgzsgrt.ws-us17.gitpod.io'});
+let mocknet = new StacksMocknet({url: Config.mocknetUrl});
 // mocknet.coreApiUrl = 'http://localhost:3999';
 // mocknet.coreApiUrl = 'https://3999-azure-cricket-glgzsgrt.ws-us17.gitpod.io'
 const testnet = new StacksTestnet();
@@ -54,13 +57,13 @@ const mainnet = new StacksMainnet();
 let activeNetwork = mocknet
 
 // let stacksNetworkType = "mocknet";
-// if(stacksNetworkType==="mocknet"){
-//   activeNetwork = mocknet
-// } else if(stacksNetworkType==="testnet"){
-//   activeNetwork = testnet
-// } else if(stacksNetworkType==="mainnet"){
-//   activeNetwork = mainnet
-// }
+if(Config.apiUrl.includes("lnswap")){
+  activeNetwork = mainnet
+} else if(Config.apiUrl.includes("gitpod")){
+  activeNetwork = mocknet
+} else {
+  activeNetwork = testnet
+}
 
 const widgetName = Config.name;
 const apiUrl = Config.apiUrl;
@@ -364,21 +367,27 @@ class Widget extends React.Component {
     // }
 
     connectStacksWallet = async () => {
+        let userSession = new UserSession({ appConfig });
         let thisthing = this;
-        console.log("connectStacksWallet, ", userSession);
+        // console.log("connectStacksWallet, ", userSession);
         if(userSession.isUserSignedIn()) {
-        //   let userData = userSession.loadUserData();
+          let userData = userSession.loadUserData();
+          console.log(`userData: `, userData);
+          this.claimStx();
         } else {
+            // console.log(`launching connect`);
             showConnect({
                 appDetails: {
                     name: 'LNSwap',
                     icon: 'https://lnswap.org/favicon.ico',
                 },
                 // redirectTo: '/',
-                finished: () => {
-                    // window.location.reload();
-                    thisthing.claimStx();
-                },
+                // finished: () => {
+                //     // window.location.reload();
+                //     // thisthing.claimStx();
+                //     console.log(`connect finished`);
+                //     thisthing.setState({buttonText: 'Claim'});
+                // },
                 userSession: userSession,
             }); 
         }
@@ -404,6 +413,14 @@ class Widget extends React.Component {
         // console.log(`preimage: ${preimage.toString('hex')}`);
         const preimageHash = crypto.sha256(preimage);
         // console.log(`preimageHash: ${preimageHash}`);
+        
+        // let userSession = new UserSession({ appConfig });
+        // let claimButtonText = 'Claim';
+        // if(!userSession.isUserSignedIn()) {
+        //     claimButtonText = 'Connect';
+        // }
+        // , buttonText: claimButtonText
+        
         this.setState({preimage: preimage.toString('hex'), preimageHash: preimageHash.toString('hex'), showLoading: true, showStatus: false, swapStatus: ''});
         this.createswap();
     }
