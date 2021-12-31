@@ -43,8 +43,8 @@ import {
 const appConfig = new AppConfig(['store_write', 'publish_data']);
 
 // uncomment when signout testing is needed.
-// let userSession = new UserSession({ appConfig });
-// userSession.signUserOut();
+let userSession = new UserSession({ appConfig });
+userSession.signUserOut();
 
 import bigInt from 'big-integer';
 import { BN } from 'bn.js';
@@ -513,6 +513,10 @@ class Widget extends React.Component {
                     stream.close();
                     break;
 
+                case "transaction.mempool":
+                    thisthing.setState({showLoading: true, showStatus: true, swapStatus: 'LNSwap.org is locking funds into the swap contract.', statusColor: 'warn', showButton: false, showQr: false});
+                    break;
+                    
                 case "transaction.confirmed":
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Funds are locked in the swap contract. Ready to claim.', statusColor: 'success', showButton: true, showQr: false});
                     break;
@@ -548,7 +552,8 @@ class Widget extends React.Component {
         console.log(`Claiming ${amount} Stx with preimage ${preimage} and timelock ${timeLock}`);
       
         // console.log("amount, decimalamount: ", amount)
-        let smallamount = parseInt(amount / 100) + 1
+        let smallamount = parseInt(amount / 100)
+        //  + 1 -> never do this
         // console.log("smallamount: " + smallamount)
       
         let swapamount = smallamount.toString(16).split(".")[0] + "";

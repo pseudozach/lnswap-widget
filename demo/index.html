@@ -1,19 +1,34 @@
 <html>
 
 <head>
-    <title>Demo NFT Marketplace</title>
+    <title>Demo Stacks Dapp</title>
 </head>
 
 <body>
-    <h2>LNSwap Embeddable Widget Demo</h2>
-    <h3>Welcome to NFTMarket: Click to buy an NFT with LN Bitcoin</h3>
-    <p>1- Download Hiro wallet extension for your browser</p>
-    <p>2- Click below to start swapping LN Bitcoin for STX</p>
-    <div><button onclick="lnswap('swap', 'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF', '5');">Launch LNSwap Widget</button></div>
+    <h2>LNSwap Widget Demo</h2>
+    <h3>Welcome to Sample Stacks Dapp</h3>
+    <p>Click below to send Bitcoin on Lightning and receive STX</p>
+    <p>Note: User will need a small amount of STX (0.1-0.5 STX) in their wallet to claim the funds</p>
+    <div style="margin:4px;">
+        <span>User's STX Address</span>
+        <input type="text" id="stxaddress" placeholder="SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX" style="min-width: 400px;"/>
+    </div>
+    <div style="margin:4px;">
+        <span>STX Amount</span>
+        <input type="number" id="stxamount" placeholder="5"/>
+    </div>
+    <div><button onclick="startSwap();">Launch LNSwap Widget</button></div>
 
     <h2>Integration Instructions for Stacks App Developers</h2>
     <p>Merchant (NFT Market) would integrate the swap tool as below:</p>
-    <pre><code>
+
+    <iframe
+        src="https://carbon.now.sh/embed?bg=rgba%28255%2C255%2C255%2C1%29&t=seti&wt=none&l=auto&ds=true&dsyoff=20px&dsblur=68px&wc=true&wa=true&pv=56px&ph=56px&ln=false&fl=1&fm=Hack&fs=14px&lh=133%25&si=false&es=2x&wm=false&code=%253Cdiv%2520id%253D%2522root%2522%253E%253C%252Fdiv%253E%250A%253Cscript%2520src%253D%2522https%253A%252F%252Flnswap-widget.vercel.app%252Fwidget.js%2522%2520%2520%250A%2509id%253D%2522LNSwap-Widget-Script%2522%2520%250A%2520%2520%2520%2520data-config%253D%2522%257B%27name%27%253A%2520%27lnswap%27%252C%2520%27config%27%253A%2520%257B%27targetElementId%27%253A%2520%27root%27%257D%257D%2522%253E%250A%253C%252Fscript%253E%250A%250A%252F%252F%2520Start%2520the%2520Swap%250Alnswap%28%27swap%27%252C%2520%27user%2520stx%2520address%27%252C%2520%27amount%2520in%2520STX%27%29%253B%250A"
+        style="width: 791px; height: 353px; border:0; transform: scale(1); overflow:hidden;"
+        sandbox="allow-scripts allow-same-origin">
+    </iframe>
+
+    <!-- <pre><code>
         &lt;div id=&quot;root&quot;&gt;&lt;/div&gt;
         &lt;script src=&quot;https://lnswap-widget.vercel.app/widget.js&quot;  
                 id=&quot;LNSwap-Widget-Script&quot; 
@@ -25,11 +40,22 @@
             lnswap('swap', 'user stx address', 'amount in STX');<br/>
         e.g. lnswap('swap', 'SP1GH2VFAZ7ZB02JHBTMJSQYKJ83ESCNBZ0S3198R', '50');
         </code></pre>
-    </p>
+    </p> -->
 
     <div id="root"></div>
     <script src="./widget.js"  id="LNSwap-Widget-Script" data-config="{'name': 'lnswap', 'config': {'targetElementId': 'root'}}" ></script>
-
+    <script>
+        function startSwap(){
+            const stxaddress = document.getElementById('stxaddress').value;
+            const stxamount = document.getElementById('stxamount').value;
+            if(!stxaddress || !stxamount) {
+                alert('please provide required values');
+                return false;
+            }
+            console.log('starting lnswap with ', stxaddress, stxamount);
+            lnswap('swap', stxaddress, stxamount);
+        }
+    </script>
 </body>
 
 </html>
