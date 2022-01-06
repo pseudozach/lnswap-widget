@@ -610,7 +610,7 @@ class Widget extends React.Component {
                     break;
 
                 case "nft.minted":
-                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'NFT minted 🚀', txId: data.transaction.id, statusColor: 'success', showButton: false, showQr: false, showComplete: true,});
+                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'NFT minting started 🚀', txId: data.transaction.id, statusColor: 'success', showButton: false, showQr: false, showComplete: true,});
                     break;
 
                 default:

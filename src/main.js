@@ -79,6 +79,7 @@ function apiHandler(api, ...params) {
             break;
         case 'swap':
             // Send the message to the current widget instance
+            // console.log('case swap ', widgetComponent);
             widgetComponent.current.setMessage(...params);
             break;
         default:
