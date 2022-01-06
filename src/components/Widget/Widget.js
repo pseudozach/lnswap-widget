@@ -589,7 +589,11 @@ class Widget extends React.Component {
             console.log('Swap status update: ', data);
             switch (data.status) {
                 case "transaction.failed":
-                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Swap failed. Please try again later.', statusColor: 'error', showQr: false});
+                    let errorText = 'Swap failed. Please try again later.'
+                    if(data.transaction.id) {
+                        errorText = 'Swap failed. ' + data.transaction.id
+                    }
+                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: errorText, statusColor: 'error', showQr: false});
                     stream.close();
                     break;
 
