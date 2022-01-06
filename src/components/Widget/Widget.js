@@ -562,7 +562,7 @@ class Widget extends React.Component {
             .then(res => {
                 console.log("directSwap created: ", res);
                 if(res.error) {
-                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.\n'+res.error, statusColor: 'error', showQr: false});
+                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. '+res.error, statusColor: 'error', showQr: false});
                     return;
                 }
                 // {
