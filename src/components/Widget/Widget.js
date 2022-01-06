@@ -21,6 +21,7 @@ import LockIcon from '@mui/icons-material/Lock';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import lightningPayReq from 'bolt11';
 
 import { StacksTestnet, StacksMocknet, StacksMainnet } from '@stacks/network';
 import { AppConfig, UserSession, showConnect, openContractCall } from '@stacks/connect';
@@ -138,11 +139,18 @@ class Widget extends React.Component {
             showStatus: false,
             swapStatus: '',
             statusColor: 'success',
-            buttonText: 'Claim',
+            buttonText: 'Connect',
             showQr: true,
             buttonLoading: false,
             showComplete: false,
             showCopyTooltip: false,
+            swapType: '',
+            nftAddress: '',
+            contractSignature: 'claim-for',
+            stxAmount: 0,
+            headerText: '',
+            txId: '',
+            // explorerLink: '',
         };
     }
 
@@ -184,7 +192,7 @@ class Widget extends React.Component {
                 >
                     <Box sx={style}>
                         <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center' }}>
-                        Send BTC, Receive STX
+                        {this.state.headerText}
                         </Typography>
                         <Typography id="modal-modal-description" sx={{ mt: 2, mb: 2 }}>
                         Confirm details and pay the LN invoice to start the swap.
@@ -302,6 +310,13 @@ class Widget extends React.Component {
                                 {this.state.swapStatus}
                                 </Typography>
                             ) : null}
+                            {this.state.txId ? (
+                                <a href={`https://explorer.stacks.co/txid/${this.state.txId}?chain=mainnet`} target="_blank">
+                                    <Typography variant="body1" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center' }} color={this.state.statusColor}>
+                                    View on Stacks Explorer
+                                    </Typography>
+                                </a>
+                            ) : null}
                         </Box>
                         <Divider sx={{ m: 2 }} />
                         {this.state.showLoading ? (<CircularProgress sx={{ mx: 'auto', textAlign: 'center', display: 'block', margin: 'auto' }} />) : null}
@@ -382,12 +397,12 @@ class Widget extends React.Component {
                     icon: 'https://lnswap.org/favicon.ico',
                 },
                 // redirectTo: '/',
-                // finished: () => {
-                //     // window.location.reload();
-                //     // thisthing.claimStx();
-                //     console.log(`connect finished`);
-                //     thisthing.setState({buttonText: 'Claim'});
-                // },
+                onFinish: () => {
+                    // window.location.reload();
+                    // thisthing.claimStx();
+                    // console.log(`connect finished`);
+                    thisthing.setState({buttonText: 'Claim'});
+                },
                 userSession: userSession,
             }); 
         }
@@ -404,7 +419,7 @@ class Widget extends React.Component {
         this.setState({buttonLoading: true,});
     }
     handleClose = () => {
-        console.log(`closeModal `, this.state);
+        // console.log(`closeModal `, this.state);
         this.setState({modalIsOpen: false});
     }
     createSecret = () => {
@@ -422,11 +437,26 @@ class Widget extends React.Component {
         // , buttonText: claimButtonText
         
         this.setState({preimage: preimage.toString('hex'), preimageHash: preimageHash.toString('hex'), showLoading: true, showStatus: false, swapStatus: ''});
-        this.createswap();
+        // this.createswap();
     }
     setMessage(...message){
-        // console.log(`swapParams: `, message)
-        this.setState({claimAddress: message[0], stxAmount: message[1], modalIsOpen: true});
+        console.log(`swapParams: `, message)
+        let headerText;
+        if(message[0] === 'reversesubmarine') {
+            headerText = 'Send BTC, Receive STX'
+        } else {
+            headerText = 'Send BTC, Receive NFT'
+        }
+        // lnswap('swap', 'mintnft', stxaddress, stxamount, contractAddress, contractSignature);
+        this.setState({
+            swapType: message[0], 
+            claimAddress: message[1], 
+            stxAmount: parseFloat(message[2]), 
+            contractAddress: message[3], 
+            contractSignature: message[4], 
+            headerText,
+            modalIsOpen: true
+        });
         this.getpairs();
     }
     getpairs = () => {
@@ -453,8 +483,20 @@ class Widget extends React.Component {
                 // convert rate, populate UI
                 this.setState({rate, fee, invoiceAmount, invoiceAmountBTC});
                 
-                // create preimage and then swap and show LN invoice
-                this.createSecret();
+                switch (this.state.swapType) {
+                    case 'reversesubmarine':
+                        // create preimage and then swap and show LN invoice
+                        this.createSwap();
+                        break;
+
+                    case 'mintnft':
+                        this.createDirectSwap();
+                        break;
+
+                    default:
+                        console.log('unknown swapType ', this.state.swapType);
+                        break;
+                }
             })
             .catch(e => {
                 console.log(`getpairs error `, e);
@@ -462,7 +504,8 @@ class Widget extends React.Component {
                 // return e;
             });     
     }
-    createswap = () => {
+    createSwap = () => {
+        this.createSecret();
         var reqbody = {
             "type": "reversesubmarine",
             "pairId": pairId,
@@ -499,6 +542,43 @@ class Widget extends React.Component {
                 this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.', statusColor: 'error', showQr: false});
             });  
     }
+    createDirectSwap = () => {
+        this.setState({txId:'', swapStatus: '', showComplete: false}); 
+        var reqbody = {
+            "nftAddress": this.state.contractAddress,
+            "userAddress": this.state.claimAddress,
+            "contractSignature": this.state.contractSignature,
+            "stxAmount": this.state.stxAmount,
+        }
+        console.log(`creating directSwap with: `, reqbody);
+        fetch(`${apiUrl}/mintnft`, {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(reqbody)
+            }).then(res => res.json())
+            .then(res => {
+                console.log("directSwap created: ", res);
+                if(res.error) {
+                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.\n'+res.error, statusColor: 'error', showQr: false});
+                    return;
+                }
+                // {
+                //     "id": "KQpyZd",
+                //     "invoice": "lnbcrt282720n1psa2kpepp5c9zkx7zshn2tlvw3udl6fjzpeh6mxmrkyg8wduky5ul8jk42729qdqqcqzpgsp5jpn35ew7r99e6e38ak3d2yysq0554cc853g4hv4jnlaad6mhrsvs9qyyssqpa5w4qapwas9lchzxcrutza6jwgn22mw8uj0x9sy2r7hgc9xc7prx6pyv5drejg5smcs9gvjvgesnphszymlyexnwzlns3lpkujjg4spnqgggg"
+                // }
+                var decoded = lightningPayReq.decode(res.invoice);
+                // console.log('decoded ', decoded);
+                const invoiceAmountBTC = (decoded.millisatoshis / 10**11).toFixed(8).toString()
+                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, showQr: true});
+                this.listenswap();
+            }).catch(e => {
+                console.log(`createswap error: `, e);
+                this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.', statusColor: 'error', showQr: false});
+            });  
+    }
     listenswap = () => {
         var thisthing = this;
         // console.log("listenswap state: ", this.state);
@@ -506,7 +586,7 @@ class Widget extends React.Component {
 
         stream.onmessage = function(event) {
             const data = JSON.parse(event.data);
-            console.log('Swap status update: ' + data.status);
+            console.log('Swap status update: ', data);
             switch (data.status) {
                 case "transaction.failed":
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Swap failed. Please try again later.', statusColor: 'error', showQr: false});
@@ -528,6 +608,11 @@ class Widget extends React.Component {
                 case "invoice.settled":
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Claim successful 🚀', statusColor: 'success', showButton: false, showComplete: true,});
                     break;
+
+                case "nft.minted":
+                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'NFT minted 🚀', txId: data.transaction.id, statusColor: 'success', showButton: false, showQr: false, showComplete: true,});
+                    break;
+
                 default:
                     break;
             }
@@ -597,6 +682,7 @@ class Widget extends React.Component {
           // anchorMode: AnchorMode.Any,
           onFinish: data => {
             console.log('Stacks claim onFinish:', data);
+            this.setState({txId: data.txId});
           },
           onCancel: data => {
             console.log('Stacks claim onCancel:', data);   
