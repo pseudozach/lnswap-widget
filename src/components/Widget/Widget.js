@@ -439,7 +439,7 @@ class Widget extends React.Component {
         this.setState({preimage: preimage.toString('hex'), preimageHash: preimageHash.toString('hex'), showLoading: true, showStatus: false, swapStatus: ''});
         // this.createswap();
     }
-    setMessage(...message){
+    setMessage = (...message) => {
         console.log(`swapParams: `, message)
         let headerText;
         if(message[0] === 'reversesubmarine') {
