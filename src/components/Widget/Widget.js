@@ -595,7 +595,7 @@ class Widget extends React.Component {
                 case "transaction.failed":
                     let errorText = 'Swap failed. Please try again later.'
                     if(data.transaction.id) {
-                        errorText = 'Swap failed. ' + data.transaction.id
+                        errorText = 'Swap failed. ' + data.transaction.id.substring(50)
                     }
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: errorText, statusColor: 'error', showQr: false});
                     stream.close();
