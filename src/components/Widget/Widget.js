@@ -41,7 +41,7 @@ import {
   PostConditionType,
 } from '@stacks/transactions';
 
-const appConfig = new AppConfig(['store_write', 'publish_data']);
+
 
 // uncomment when signout testing is needed.
 // let userSession = new UserSession({ appConfig });
@@ -382,6 +382,7 @@ class Widget extends React.Component {
     // }
 
     connectStacksWallet = async () => {
+        const appConfig = new AppConfig(['store_write', 'publish_data']);
         let userSession = new UserSession({ appConfig });
         let thisthing = this;
         // console.log("connectStacksWallet, ", userSession);
@@ -506,6 +507,7 @@ class Widget extends React.Component {
     }
     createSwap = () => {
         // moving this here because it seems to cause issues on stxnft?
+        const appConfig = new AppConfig(['store_write', 'publish_data']);
         let userSession = new UserSession({ appConfig });
         userSession.signUserOut();
 
