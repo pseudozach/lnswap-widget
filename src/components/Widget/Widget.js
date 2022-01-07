@@ -23,23 +23,23 @@ import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import lightningPayReq from 'bolt11';
 
-import { StacksTestnet, StacksMocknet, StacksMainnet } from '@stacks/network';
-import { AppConfig, UserSession, showConnect, openContractCall } from '@stacks/connect';
-import {
-  bufferCV,
-  // makeStandardSTXPostCondition,
-  FungibleConditionCode,
-  PostConditionMode,
-  // createSTXPostCondition,
-  // parsePrincipalString,
-  // StacksMessageType,
-  // PostConditionType
-  makeContractSTXPostCondition,
-  createContractPrincipal,
-  parsePrincipalString,
-  StacksMessageType,
-  PostConditionType,
-} from '@stacks/transactions';
+// import { StacksTestnet, StacksMocknet, StacksMainnet } from '@stacks/network';
+// import { AppConfig, UserSession, showConnect, openContractCall } from '@stacks/connect';
+// import {
+//   bufferCV,
+//   // makeStandardSTXPostCondition,
+//   FungibleConditionCode,
+//   PostConditionMode,
+//   // createSTXPostCondition,
+//   // parsePrincipalString,
+//   // StacksMessageType,
+//   // PostConditionType
+//   makeContractSTXPostCondition,
+//   createContractPrincipal,
+//   parsePrincipalString,
+//   StacksMessageType,
+//   PostConditionType,
+// } from '@stacks/transactions';
 
 
 
@@ -47,24 +47,24 @@ import {
 // let userSession = new UserSession({ appConfig });
 // userSession.signUserOut();
 
-import bigInt from 'big-integer';
-import { BN } from 'bn.js';
+// import bigInt from 'big-integer';
+// import { BN } from 'bn.js';
 
-let mocknet = new StacksMocknet({url: Config.mocknetUrl});
-// mocknet.coreApiUrl = 'http://localhost:3999';
-// mocknet.coreApiUrl = 'https://3999-azure-cricket-glgzsgrt.ws-us17.gitpod.io'
-const testnet = new StacksTestnet();
-const mainnet = new StacksMainnet();
-let activeNetwork = mocknet
+// let mocknet = new StacksMocknet({url: Config.mocknetUrl});
+// // mocknet.coreApiUrl = 'http://localhost:3999';
+// // mocknet.coreApiUrl = 'https://3999-azure-cricket-glgzsgrt.ws-us17.gitpod.io'
+// const testnet = new StacksTestnet();
+// const mainnet = new StacksMainnet();
+// let activeNetwork = mocknet
 
-// let stacksNetworkType = "mocknet";
-if(Config.apiUrl.includes("lnswap")){
-  activeNetwork = mainnet
-} else if(Config.apiUrl.includes("gitpod")){
-  activeNetwork = mocknet
-} else {
-  activeNetwork = testnet
-}
+// // let stacksNetworkType = "mocknet";
+// if(Config.apiUrl.includes("lnswap")){
+//   activeNetwork = mainnet
+// } else if(Config.apiUrl.includes("gitpod")){
+//   activeNetwork = mocknet
+// } else {
+//   activeNetwork = testnet
+// }
 
 const widgetName = Config.name;
 const apiUrl = Config.apiUrl;
@@ -381,33 +381,33 @@ class Widget extends React.Component {
     //     this.getpairs();
     // }
 
-    connectStacksWallet = async () => {
-        const appConfig = new AppConfig(['store_write', 'publish_data']);
-        let userSession = new UserSession({ appConfig });
-        let thisthing = this;
-        // console.log("connectStacksWallet, ", userSession);
-        if(userSession.isUserSignedIn()) {
-          let userData = userSession.loadUserData();
-          console.log(`userData: `, userData);
-          this.claimStx();
-        } else {
-            // console.log(`launching connect`);
-            showConnect({
-                appDetails: {
-                    name: 'LNSwap',
-                    icon: 'https://lnswap.org/favicon.ico',
-                },
-                // redirectTo: '/',
-                onFinish: () => {
-                    // window.location.reload();
-                    // thisthing.claimStx();
-                    // console.log(`connect finished`);
-                    thisthing.setState({buttonText: 'Claim'});
-                },
-                userSession: userSession,
-            }); 
-        }
-    }    
+    // connectStacksWallet = async () => {
+    //     const appConfig = new AppConfig(['store_write', 'publish_data']);
+    //     let userSession = new UserSession({ appConfig });
+    //     let thisthing = this;
+    //     // console.log("connectStacksWallet, ", userSession);
+    //     if(userSession.isUserSignedIn()) {
+    //       let userData = userSession.loadUserData();
+    //       console.log(`userData: `, userData);
+    //       this.claimStx();
+    //     } else {
+    //         // console.log(`launching connect`);
+    //         showConnect({
+    //             appDetails: {
+    //                 name: 'LNSwap',
+    //                 icon: 'https://lnswap.org/favicon.ico',
+    //             },
+    //             // redirectTo: '/',
+    //             onFinish: () => {
+    //                 // window.location.reload();
+    //                 // thisthing.claimStx();
+    //                 // console.log(`connect finished`);
+    //                 thisthing.setState({buttonText: 'Claim'});
+    //             },
+    //             userSession: userSession,
+    //         }); 
+    //     }
+    // }    
     copyToClipboard = () => {
         let thisthing = this;
         navigator.clipboard.writeText(this.state.invoice);
@@ -631,76 +631,81 @@ class Widget extends React.Component {
         };
     }
 
-    claimStx = async() => {  
-        let thisthing = this;
+    // claimStx = async() => {  
+    //     let thisthing = this;
 
-        this.setState({buttonLoading: true,});
-        console.log("swapObj: ", this.state.swapObj);
-        let contractAddress = this.state.swapObj.lockupAddress.split(".")[0].toUpperCase();
-        let contractName = this.state.swapObj.lockupAddress.split(".")[1]
-        // console.log("claimStx ", contractAddress, contractName)
+    //     this.setState({buttonLoading: true,});
+    //     console.log("swapObj: ", this.state.swapObj);
+    //     let contractAddress = this.state.swapObj.lockupAddress.split(".")[0].toUpperCase();
+    //     let contractName = this.state.swapObj.lockupAddress.split(".")[1]
+    //     // console.log("claimStx ", contractAddress, contractName)
       
-        let preimage = this.state.preimage;
-        let amount = this.state.swapObj.onchainAmount;
-        let timeLock = this.state.swapObj.timeoutBlockHeight;
+    //     let preimage = this.state.preimage;
+    //     let amount = this.state.swapObj.onchainAmount;
+    //     let timeLock = this.state.swapObj.timeoutBlockHeight;
       
-        console.log(`Claiming ${amount} Stx with preimage ${preimage} and timelock ${timeLock}`);
+    //     console.log(`Claiming ${amount} Stx with preimage ${preimage} and timelock ${timeLock}`);
       
-        // console.log("amount, decimalamount: ", amount)
-        let smallamount = parseInt(amount / 100)
-        //  + 1 -> never do this
-        // console.log("smallamount: " + smallamount)
+    //     // console.log("amount, decimalamount: ", amount)
+    //     let smallamount = parseInt(amount / 100)
+    //     //  + 1 -> never do this
+    //     // console.log("smallamount: " + smallamount)
       
-        let swapamount = smallamount.toString(16).split(".")[0] + "";
-        let postConditionAmount = Math.ceil(parseInt(smallamount));
+    //     let swapamount = smallamount.toString(16).split(".")[0] + "";
+    //     let postConditionAmount = Math.ceil(parseInt(smallamount));
 
-        const postConditionAddress = contractAddress;
-        const postConditionCode = FungibleConditionCode.LessEqual;
-        const postConditions = [
-          makeContractSTXPostCondition(
-            postConditionAddress,
-            contractName,
-            postConditionCode,
-            postConditionAmount
-          )
-        ];
+    //     const postConditionAddress = contractAddress;
+    //     const postConditionCode = FungibleConditionCode.LessEqual;
+    //     const postConditions = [
+    //       makeContractSTXPostCondition(
+    //         postConditionAddress,
+    //         contractName,
+    //         postConditionCode,
+    //         postConditionAmount
+    //       )
+    //     ];
       
-        // console.log("postConditions: " + contractAddress, contractName, postConditionCode, postConditionAmount)
+    //     // console.log("postConditions: " + contractAddress, contractName, postConditionCode, postConditionAmount)
       
       
-        let paddedamount = swapamount.padStart(32, "0");
-        let paddedtimelock = timeLock.toString(16).padStart(32, "0");
-        // console.log("amount, timelock ", smallamount, swapamount, paddedamount, paddedtimelock);
+    //     let paddedamount = swapamount.padStart(32, "0");
+    //     let paddedtimelock = timeLock.toString(16).padStart(32, "0");
+    //     // console.log("amount, timelock ", smallamount, swapamount, paddedamount, paddedtimelock);
       
-        // (claimStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)))
-        const functionArgs = [
-          bufferCV(Buffer.from(preimage,'hex')),
-          bufferCV(Buffer.from(paddedamount,'hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from(paddedtimelock,'hex')),
-        ];
-        const txOptions = {
-          contractAddress: contractAddress,
-          contractName: contractName,
-          functionName: 'claimStx',
-          functionArgs: functionArgs,
-          // validateWithAbi: true,
-          network: activeNetwork,
-        //   postConditionMode: PostConditionMode.Allow,
-          postConditions,
-          // anchorMode: AnchorMode.Any,
-          onFinish: data => {
-            console.log('Stacks claim onFinish:', data);
-            this.setState({txId: data.txId});
-          },
-          onCancel: data => {
-            console.log('Stacks claim onCancel:', data);   
-            thisthing.setState({buttonLoading: false});
-          }
-        };
-        await openContractCall(txOptions);
-    }
+    //     // (claimStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)))
+    //     const functionArgs = [
+    //       bufferCV(Buffer.from(preimage,'hex')),
+    //       bufferCV(Buffer.from(paddedamount,'hex')),
+    //       bufferCV(Buffer.from('01','hex')),
+    //       bufferCV(Buffer.from('01','hex')),
+    //       bufferCV(Buffer.from(paddedtimelock,'hex')),
+    //     ];
+    //     const txOptions = {
+    //       contractAddress: contractAddress,
+    //       contractName: contractName,
+    //       functionName: 'claimStx',
+    //       functionArgs: functionArgs,
+    //       // validateWithAbi: true,
+    //       network: activeNetwork,
+    //     //   postConditionMode: PostConditionMode.Allow,
+    //       postConditions,
+    //       // anchorMode: AnchorMode.Any,
+    //       onFinish: data => {
+    //         console.log('Stacks claim onFinish:', data);
+    //         this.setState({txId: data.txId});
+    //       },
+    //       onCancel: data => {
+    //         console.log('Stacks claim onCancel:', data);   
+    //         thisthing.setState({buttonLoading: false});
+    //       }
+    //     };
+    //     await openContractCall(txOptions);
+    // }
+
+    // removed from package.json
+    // "@stacks/connect": "^6.2.0",
+    // "@stacks/network": "^2.0.1",
+    // "@stacks/transactions": "^2.0.1",
 
 };
 
