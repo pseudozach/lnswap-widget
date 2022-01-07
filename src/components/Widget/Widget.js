@@ -44,8 +44,8 @@ import {
 const appConfig = new AppConfig(['store_write', 'publish_data']);
 
 // uncomment when signout testing is needed.
-let userSession = new UserSession({ appConfig });
-userSession.signUserOut();
+// let userSession = new UserSession({ appConfig });
+// userSession.signUserOut();
 
 import bigInt from 'big-integer';
 import { BN } from 'bn.js';
@@ -505,6 +505,10 @@ class Widget extends React.Component {
             });     
     }
     createSwap = () => {
+        // moving this here because it seems to cause issues on stxnft?
+        let userSession = new UserSession({ appConfig });
+        userSession.signUserOut();
+
         this.createSecret();
         var reqbody = {
             "type": "reversesubmarine",
