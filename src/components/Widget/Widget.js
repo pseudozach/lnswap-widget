@@ -31,6 +31,11 @@ import {
   standardPrincipalCV,
   // makeStandardSTXPostCondition,
   FungibleConditionCode,
+  NonFungibleConditionCode,
+  createAssetInfo,
+  makeContractNonFungiblePostCondition,
+  makeStandardNonFungiblePostCondition,
+  stringAsciiCV,
   PostConditionMode,
   // createSTXPostCondition,
   // parsePrincipalString,
@@ -778,13 +783,35 @@ class Widget extends React.Component {
 
         const postConditionAddress = contractAddress;
         const postConditionCode = FungibleConditionCode.LessEqual;
+
+        // // With a contract principal
+        // const contractAddress = 'SPBMRFRPPGCDE3F384WCJPK8PQJGZ8K9QKK7F59X';
+        // const contractName = 'test-contract';
+
+        // With a standard principal
+        // const postConditionAddress = 'SP2ZD731ANQZT6J4K3F5N8A40ZXWXC1XFXHVVQFKE';
+        const nftPostConditionCode = NonFungibleConditionCode.Owns;
+        // const assetAddress = 'SP62M8MEFH32WGSB7XSF9WJZD7TQB48VQB5ANWSJ';
+        // const assetContractName = 'test-asset-contract';
+        const assetName = 'cube';
+        const tokenAssetName = stringAsciiCV('cube');
+        const nonFungibleAssetInfo = createAssetInfo(nftAddress, nftName, assetName);
+
+        const standardNonFungiblePostCondition = makeStandardNonFungiblePostCondition(
+            this.state.claimAddress,
+            nftPostConditionCode,
+            nonFungibleAssetInfo,
+            tokenAssetName
+        );
+
         const postConditions = [
-          makeContractSTXPostCondition(
-            postConditionAddress,
-            contractName,
-            postConditionCode,
-            postConditionAmount
-          )
+        //   makeContractSTXPostCondition(
+        //     postConditionAddress,
+        //     contractName,
+        //     postConditionCode,
+        //     postConditionAmount
+        //   ),
+            standardNonFungiblePostCondition
         ];
       
         // console.log("postConditions: " + contractAddress, contractName, postConditionCode, postConditionAmount)
@@ -811,8 +838,8 @@ class Widget extends React.Component {
           functionArgs: functionArgs,
           // validateWithAbi: true,
           network: activeNetwork,
-        //   postConditionMode: PostConditionMode.Allow,
-          postConditions,
+          postConditionMode: PostConditionMode.Allow,
+        //   postConditions,
           // anchorMode: AnchorMode.Any,
           onFinish: data => {
             console.log('Stacks claim onFinish:', data);
