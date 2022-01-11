@@ -1,3 +1,8 @@
 # Table of contents
 
-* [LNSwap.org](README.md)
+* [👋 Hi!](README.md)
+* [🚀 Quick Start](quick-start.md)
+
+## Reference
+
+* [API Reference](reference/api-reference.md)
