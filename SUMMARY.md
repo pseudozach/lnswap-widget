@@ -1,6 +1,6 @@
 # Table of contents
 
-* [👋 Hi!](README.md)
+* [👋 Welcome](README.md)
 * [🚀 Quick Start](quick-start.md)
 
 ## Reference

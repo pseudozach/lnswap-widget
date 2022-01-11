@@ -5,16 +5,16 @@ description: >-
   USDA on Stacks.
 ---
 
-# 👋 Hi!
+# 👋 Welcome
 
 ## Widget Documentation
 
-[LNSwap.org](https://lnswap.org) offers a drop-in javascript widget where any Stacks App can accept Lightning payments instantly.
+[LNSwap.org](https://lnswap.org) offers a drop-in javascript widget that any Stacks App can use to accept Lightning payments instantly.
 
-Ready to ride the lightning? Jump in to the quick start docs and get making your first request:
+Ready to ride the lightning? Jump into the quick start docs and make your first request:
 
 {% content-ref url="quick-start.md" %}
 [quick-start.md](quick-start.md)
 {% endcontent-ref %}
 
-Dive a little deeper and start exploring our API reference to get an idea of everything that's possible with the API:
+Read through our straight-forward documentation on how to integrate LNSwap API
