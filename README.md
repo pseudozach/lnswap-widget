@@ -9,7 +9,7 @@ description: >-
 
 ## Widget Documentation
 
-LNSwap.org offers a drop-in javascript widget where any Stacks App can accept Lightning payments instantly.
+[LNSwap.org](https://lnswap.org) offers a drop-in javascript widget where any Stacks App can accept Lightning payments instantly.
 
 Ready to ride the lightning? Jump in to the quick start docs and get making your first request:
 
