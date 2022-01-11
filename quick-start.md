@@ -1,7 +1,7 @@
 # 🚀 Quick Start
 
 {% hint style="success" %}
-All swaps (except `Custodial Mint`) are trustless and there's no risk to user funds. If user navigates away from the page or swap fails for any reason, user's Lightning invoice payment will be canceled in \~24 hours and their funds will return to their Lightning wallet.
+All swaps (except Custodial Mint) are trustless and there's no risk to user funds. If user navigates away from the page or swap fails for any reason, user's Lightning invoice payment will be canceled in \~24 hours and their funds will return to their Lightning wallet.
 {% endhint %}
 
 ## No need for API keys&#x20;
@@ -31,7 +31,7 @@ The best way to interact with our API is to use the below code to make it availa
 {% endtabs %}
 
 {% hint style="info" %}
-**Good to know:** You can use the same script on any site. Just drop into your static page and `lnswap` function should be available globally or under `window.lnswap`
+**Note:** You can use the same script on any site. Just drop into your static page and `lnswap` function should be available globally or under `window.lnswap`
 {% endhint %}
 
 ## Create your first swap request
