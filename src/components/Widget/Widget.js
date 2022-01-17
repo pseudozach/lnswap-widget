@@ -805,21 +805,21 @@ class Widget extends React.Component {
         // const contractAddress = 'SPBMRFRPPGCDE3F384WCJPK8PQJGZ8K9QKK7F59X';
         // const contractName = 'test-contract';
 
-        // With a standard principal
-        // const postConditionAddress = 'SP2ZD731ANQZT6J4K3F5N8A40ZXWXC1XFXHVVQFKE';
-        const nftPostConditionCode = NonFungibleConditionCode.Owns;
-        // const assetAddress = 'SP62M8MEFH32WGSB7XSF9WJZD7TQB48VQB5ANWSJ';
-        // const assetContractName = 'test-asset-contract';
-        const assetName = 'cube';
-        const tokenAssetName = stringAsciiCV('cube');
-        const nonFungibleAssetInfo = createAssetInfo(nftAddress, nftName, assetName);
+        // // With a standard principal
+        // // const postConditionAddress = 'SP2ZD731ANQZT6J4K3F5N8A40ZXWXC1XFXHVVQFKE';
+        // const nftPostConditionCode = NonFungibleConditionCode.Owns;
+        // // const assetAddress = 'SP62M8MEFH32WGSB7XSF9WJZD7TQB48VQB5ANWSJ';
+        // // const assetContractName = 'test-asset-contract';
+        // const assetName = 'cube';
+        // const tokenAssetName = stringAsciiCV('cube');
+        // const nonFungibleAssetInfo = createAssetInfo(nftAddress, nftName, assetName);
 
-        const standardNonFungiblePostCondition = makeStandardNonFungiblePostCondition(
-            this.state.claimAddress,
-            nftPostConditionCode,
-            nonFungibleAssetInfo,
-            tokenAssetName
-        );
+        // const standardNonFungiblePostCondition = makeStandardNonFungiblePostCondition(
+        //     this.state.claimAddress,
+        //     nftPostConditionCode,
+        //     nonFungibleAssetInfo,
+        //     tokenAssetName
+        // );
 
         const standardStxPostCondition = makeStandardSTXPostCondition(
             this.state.claimAddress,
