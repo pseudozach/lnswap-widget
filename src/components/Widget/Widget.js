@@ -46,6 +46,7 @@ import {
   parsePrincipalString,
   StacksMessageType,
   PostConditionType,
+  makeStandardSTXPostCondition,
 } from '@stacks/transactions';
 
 // import bigInt from 'big-integer';
@@ -794,8 +795,9 @@ class Widget extends React.Component {
         // console.log("smallamount: " + smallamount)
       
         let swapamount = smallamount.toString(16).split(".")[0] + "";
-        let postConditionAmount = Math.ceil(parseInt(smallamount));
 
+        // post conditions disabled - couldnt make it work for some reason
+        let postConditionAmount = Math.ceil(parseInt(smallamount));
         const postConditionAddress = contractAddress;
         const postConditionCode = FungibleConditionCode.LessEqual;
 
@@ -819,14 +821,21 @@ class Widget extends React.Component {
             tokenAssetName
         );
 
+        const standardStxPostCondition = makeStandardSTXPostCondition(
+            this.state.claimAddress,
+            FungibleConditionCode.LessEqual,
+            postConditionAmount
+        );
+
         const postConditions = [
-        //   makeContractSTXPostCondition(
-        //     postConditionAddress,
-        //     contractName,
-        //     postConditionCode,
-        //     postConditionAmount
-        //   ),
-            standardNonFungiblePostCondition
+          makeContractSTXPostCondition(
+            postConditionAddress,
+            contractName,
+            postConditionCode,
+            postConditionAmount
+          ),
+            // standardNonFungiblePostCondition
+            standardStxPostCondition
         ];
       
         // console.log("postConditions: " + contractAddress, contractName, postConditionCode, postConditionAmount)
@@ -853,8 +862,8 @@ class Widget extends React.Component {
           functionArgs: functionArgs,
           // validateWithAbi: true,
           network: activeNetwork,
-          postConditionMode: PostConditionMode.Allow,
-        //   postConditions,
+          postConditionMode: PostConditionMode.Deny,
+          postConditions,
           // anchorMode: AnchorMode.Any,
           onFinish: data => {
             console.log('Stacks claim onFinish:', data);
