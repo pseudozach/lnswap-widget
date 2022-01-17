@@ -22,7 +22,7 @@ The best way to interact with our API is to use the below code to make it availa
 {% tab title="JS" %}
 ```
 <div id="root"></div>
-<script src="https://lnswap-widget.vercel.app/widget.js"  
+<script src="https://widget.lnswap.org/widget.js"  
 	id="LNSwap-Widget-Script" 
     data-config="{'name': 'lnswap', 'config': {'targetElementId': 'root'}}">
 </script>
@@ -40,6 +40,8 @@ To create your first swap request, populate the values below and call the `lnswa
 
 {% hint style="warning" %}
 **Heads up:** If you plan to use `Custodial Mint` please reach out to ensure that transactions will succeed as the `claim-for` contract call should conform to the expected trait.
+
+Here's a sample NFT contract: [https://explorer.stacks.co/txid/SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.stacks-roots-v2?chain=mainnet](https://explorer.stacks.co/txid/SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.stacks-roots-v2?chain=mainnet)
 {% endhint %}
 
 Take a look at different swap types you can trigger using the widget:
@@ -53,7 +55,8 @@ lnswap('swap',
        'user stx address', 
        'amount in STX', 
        '(only for mintnft/triggerswap) NFT Contract Address',
-       '(only for mintnft) NFT Mint Function Name');
+       '(only for mintnft) NFT Mint Function Name'
+       'sponsored transaction');
 ```
 
 
@@ -76,7 +79,8 @@ lnswap('swap',
        'triggerswap', 
        'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF', 
        25, 
-       'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF.stacks-roots-v2');
+       'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF.stacks-roots-v2',
+       'true');
 ```
 {% endtab %}
 
