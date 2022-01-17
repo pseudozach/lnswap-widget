@@ -125,7 +125,6 @@ class Widget extends React.Component {
             message: [],
             modalIsOpen: false,
             claimAddress: '',
-            stxAmount: '10',
             invoiceAmount: 0,
             invoiceAmountBTC: '...',
             preimage: '',
@@ -150,6 +149,7 @@ class Widget extends React.Component {
             nftAddress: '',
             contractSignature: 'claim-for',
             stxAmount: 0,
+            stxAmountLarge: 0,
             headerText: '',
             txId: '',
             triggerContractName: 'triggerswap-v1',
@@ -440,6 +440,9 @@ class Widget extends React.Component {
         // console.log(`closeModal `, this.state);
         this.setState({modalIsOpen: false});
     }
+    resetState = () => {
+        this.setState({txId:'', swapStatus: '', showComplete: false}); 
+    }
     createSecret = () => {
         // generate one-time-use preimage/preimageHash
         const preimage = randomBytes(32);
@@ -470,6 +473,7 @@ class Widget extends React.Component {
             swapType: message[0], 
             claimAddress: message[1], 
             stxAmount: parseFloat(message[2]), 
+            stxAmountLarge: parseFloat(Math.round(message[2]*10**8)), 
             contractAddress: message[3], 
             contractSignature: message[4], 
             headerText,
@@ -532,13 +536,15 @@ class Widget extends React.Component {
         // let userSession = new UserSession({ appConfig });
         // userSession.signUserOut();
 
+        this.resetState();
         this.createSecret();
         var reqbody = {
             "type": "reversesubmarine",
             "pairId": pairId,
             "orderSide": "sell",
             "claimAddress": this.state.claimAddress,
-            "invoiceAmount": this.state.invoiceAmount,
+            // "invoiceAmount": this.state.invoiceAmount,
+            "onchainAmount": this.state.stxAmountLarge,
             "preimageHash": this.state.preimageHash
         }
         console.log(`creating swap with: `, reqbody);
@@ -556,7 +562,9 @@ class Widget extends React.Component {
                     this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.', statusColor: 'error', showQr: false});
                     return;
                 }
-                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, showQr: true});
+                var decoded = lightningPayReq.decode(res.invoice);
+                const invoiceAmountBTC = (decoded.millisatoshis / 10**11).toFixed(8).toString();
+                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, showQr: true});
                 this.listenswap();
             }).catch(e => {
                 console.log(`createswap error: `, e);
@@ -569,13 +577,16 @@ class Widget extends React.Component {
         // let userSession = new UserSession({ appConfig });
         // userSession.signUserOut();
 
+        this.resetState();
         this.createSecret();
         var reqbody = {
             "type": "reversesubmarine",
             "pairId": pairId,
             "orderSide": "sell",
             "claimAddress": this.state.claimAddress,
-            "invoiceAmount": this.state.invoiceAmount,
+            // "invoiceAmount": this.state.invoiceAmount,
+            // need to send onchainAmount to ensure right right STX amount!
+            "onchainAmount": this.state.stxAmountLarge,
             "preimageHash": this.state.preimageHash,
             "swapType": "triggerStx",
         }
@@ -594,7 +605,9 @@ class Widget extends React.Component {
                     this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.', statusColor: 'error', showQr: false});
                     return;
                 }
-                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, swapType: 'triggerswap', showQr: true});
+                var decoded = lightningPayReq.decode(res.invoice);
+                const invoiceAmountBTC = (decoded.millisatoshis / 10**11).toFixed(8).toString();
+                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, swapType: 'triggerswap', showQr: true});
                 this.listenswap();
             }).catch(e => {
                 console.log(`createtriggerswap error: `, e);
@@ -602,7 +615,7 @@ class Widget extends React.Component {
             });  
     }
     createDirectSwap = () => {
-        this.setState({txId:'', swapStatus: '', showComplete: false}); 
+        this.resetState();
         var reqbody = {
             "nftAddress": this.state.contractAddress,
             "userAddress": this.state.claimAddress,
@@ -694,7 +707,8 @@ class Widget extends React.Component {
         // console.log("claimStx ", contractAddress, contractName)
       
         let preimage = this.state.preimage;
-        let amount = this.state.swapObj.onchainAmount;
+        // let amount = this.state.swapObj.onchainAmount;
+        let amount = this.state.stxAmountLarge;
         let timeLock = this.state.swapObj.timeoutBlockHeight;
       
         console.log(`Claiming ${amount} Stx with preimage ${preimage} and timelock ${timeLock}`);
@@ -768,7 +782,8 @@ class Widget extends React.Component {
         const nftName = this.state.contractAddress.split(".")[1];
       
         let preimage = this.state.preimage;
-        let amount = this.state.swapObj.onchainAmount;
+        // let amount = this.state.swapObj.onchainAmount;
+        let amount = this.state.stxAmountLarge;
         let timeLock = this.state.swapObj.timeoutBlockHeight;
       
         console.log(`TriggerClaiming ${amount} Stx with preimage ${preimage} and timelock ${timeLock} for nft ${nftAddress} ${nftName} and send to ${this.state.claimAddress}`);
