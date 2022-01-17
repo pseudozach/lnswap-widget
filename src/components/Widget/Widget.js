@@ -480,7 +480,7 @@ class Widget extends React.Component {
         this.setState({modalIsOpen: false});
     }
     resetState = () => {
-        this.setState({txId:'', swapStatus: '', showComplete: false}); 
+        this.setState({txId:'', swapStatus: '', showComplete: false, buttonLoading: false, minerFeePaid: false,}); 
     }
     createSecret = () => {
         // generate one-time-use preimage/preimageHash
@@ -649,10 +649,12 @@ class Widget extends React.Component {
                 var decoded = lightningPayReq.decode(res.invoice);
                 const invoiceAmountBTC = (decoded.millisatoshis / 10**11).toFixed(8).toString();
                 let minerFeeInvoice = '';
+                let showStatus = false;
                 if(res.minerFeeInvoice) {
                     minerFeeInvoice = res.minerFeeInvoice.toUpperCase();
+                    showStatus = true;
                 }
-                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, minerFeeInvoice, minerPaymentLink: `lightning:${minerFeeInvoice}`, swapObj: res, invoiceAmountBTC, swapType: 'triggerswap', showQr: true});
+                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, minerFeeInvoice, minerPaymentLink: `lightning:${minerFeeInvoice}`, swapObj: res, invoiceAmountBTC, swapType: 'triggerswap', showQr: true, swapStatus: 'This invoice is for the transaction fee' , showStatus, });
                 this.listenswap();
             }).catch(e => {
                 console.log(`createtriggerswap error: `, e);
@@ -735,7 +737,7 @@ class Widget extends React.Component {
                     break;
 
                 case "minerfee.paid":
-                    thisthing.setState({minerFeePaid: true, showQr: true,});
+                    thisthing.setState({minerFeePaid: true, showQr: true, swapStatus: 'This invoice is the swap hold invoice' , showStatus: true,});
                     break;
                     
                 default:
@@ -912,10 +914,17 @@ class Widget extends React.Component {
           network: activeNetwork,
           postConditionMode: PostConditionMode.Deny,
           postConditions,
+          sponsored: this.state.sponsoredTx,
           // anchorMode: AnchorMode.Any,
           onFinish: data => {
             console.log('Stacks claim onFinish:', data);
-            this.setState({txId: data.txId});
+            if(!this.state.sponsoredTx) {
+                this.setState({txId: data.txId});
+            } else {
+                // sponsored tx - send signed tx to backend to broadcast
+                const serializedTx = data.stacksTransaction.serialize().toString('hex');
+                this.broadcastSponsoredTx(serializedTx);
+            }
           },
           onCancel: data => {
             console.log('Stacks claim onCancel:', data);   
@@ -923,6 +932,38 @@ class Widget extends React.Component {
           }
         };
         await openContractCall(txOptions);
+    }
+    broadcastSponsoredTx = (rawTx) => {
+        var reqbody = {
+            "id": this.state.swapId,
+            "tx": rawTx,
+        }
+        console.log(`creating broadcastsponsoredtx with: `, reqbody);
+        fetch(`${apiUrl}/broadcastsponsoredtx`, {
+            method: 'post',
+            headers: {
+                'Accept': 'application/json, text/plain, */*',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(reqbody)
+            }).then(res => res.json())
+            .then(res => {
+                console.log("broadcastsponsoredtx response: ", res);
+                if(res.error) {
+                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. '+res.error, statusColor: 'error', showQr: false});
+                    return;
+                }
+                if(JSON.stringify(res).includes('error')) {
+                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. ', statusColor: 'error', showQr: false});
+                    return;
+                }
+                this.setState({txId: res.transactionId, });
+                // this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, showQr: true});
+                // this.listenswap();
+            }).catch(e => {
+                console.log(`broadcastSponsoredTx error: `, e);
+                this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. Please try again later.', statusColor: 'error', showQr: false});
+            });  
     }
 
     // removed from package.json - readded
