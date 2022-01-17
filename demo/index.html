@@ -9,7 +9,7 @@
     <!-- <h3>Welcome to Sample Stacks App</h3> -->
     <h3>Use Case - 1: Send Bitcoin on Lightning and receive STX</h3>
     <p>Note: User will need a small amount of STX (0.1-0.5 STX) in their wallet to claim the funds</p>
-    <p style="color: red;">Note 2: Disabled for now as we work on resolving @stacks/connect package conflict between host and widget</p>
+    <!-- <p style="color: red;">Note 2: Disabled for now as we work on resolving @stacks/connect package conflict between host and widget</p> -->
     <div style="margin:4px;">
         <span>User's STX Address</span>
         <input type="text" class="stxaddress" placeholder="SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX" style="min-width: 400px;"/>
@@ -21,8 +21,8 @@
     <div><button onclick="startSwap();">Launch LNSwap Widget</button></div>
 
 
-    <h3>Use Case - 2: Mint NFT on Stacks with Lightning</h3>
-    <p>Note: Swap is not trustless. yet.</p>
+    <h3>Use Case - 2: (Custodial) Mint NFT on Stacks with Lightning</h3>
+    <p>Note: Swap is not trustless.</p>
     <div style="margin:4px;">
         <span>NFT Contract Address</span>
         <input type="text" id="contractAddress" placeholder="SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.stacks-roots-v2" style="min-width: 500px;"/>
@@ -40,6 +40,30 @@
         <input type="text" id="contractSignature" placeholder="claim-for" value="claim-for" style="min-width: 400px;"/>
     </div>
     <div><button onclick="startDirectSwap();">Launch LNSwap Widget</button></div>
+
+
+    <h3>Use Case - 3: (Non-Custodial) Mint NFT on Stacks with Lightning</h3>
+    <div style="margin:4px;">
+        <span>NFT Contract Address</span>
+        <input type="text" id="nccontractAddress" placeholder="SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.stacks-roots-v2" style="min-width: 500px;" value="ST30VXWG00R13WK8RDXBSTHXNWGNKCAQTRYEMA9FK.nft"/>
+    </div>
+    <div style="margin:4px;">
+        <span>User's STX Address</span>
+        <input type="text" class="stxaddress" placeholder="SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX" style="min-width: 400px;" value="ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF"/>
+    </div>
+    <div style="margin:4px;">
+        <span>STX Amount</span>
+        <input type="number" class="stxamount" placeholder="5" value="5"/>
+    </div>
+    <div style="margin:4px;">
+        <span>NFT Contract Claim/Mint Signature</span>
+        <input type="text" id="nccontractSignature" placeholder="claim-for" value="claim-for" style="min-width: 400px;"/>
+    </div>
+    <div style="margin:4px;">
+        <span>Sponsored Transaction (Set to true if user has no STX)</span>
+        <input type="text" id="sponsoredTx" placeholder="false" value="true" style=""/>
+    </div>
+    <div><button onclick="startTriggerSwap();">Launch LNSwap Widget</button></div>
 
     <h2>Integration Instructions for Stacks App Developers</h2>
     <!-- <p>Stacks App would integrate the swap tool as below:</p> -->
@@ -96,6 +120,19 @@
             }
             console.log('starting lnswap with ', stxaddress, stxamount);
             lnswap('swap', 'mintnft', stxaddress, stxamount, contractAddress, contractSignature);
+        }
+        function startTriggerSwap(){
+            const stxaddress = document.getElementsByClassName('stxaddress')[2].value;
+            const stxamount = document.getElementsByClassName('stxamount')[2].value;
+            const contractAddress = document.getElementById('nccontractAddress').value;
+            const contractSignature = document.getElementById('nccontractSignature').value;
+            const sponsoredTx = document.getElementById('sponsoredTx').value;
+            if(!stxaddress || !stxamount || !contractAddress || !contractSignature) {
+                alert('please provide required values');
+                return false;
+            }
+            console.log('starting triggerswap with ', stxaddress, stxamount);
+            lnswap('swap', 'triggerswap', stxaddress, stxamount, contractAddress, contractSignature, sponsoredTx);
         }
     </script>
 </body>

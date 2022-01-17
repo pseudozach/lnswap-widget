@@ -2,10 +2,10 @@ function getConfig() {
     return {
         name: "LNSwap-Widget",
         apiUrl: "https://api.lnswap.org:9002",
-        // apiUrl: "https://9002-plum-guppy-65d1lt31.ws-us25.gitpod.io",
+        // apiUrl: "https://9002-pseudozach-lnstxbridge-c11co3n9dpn.ws-us27.gitpod.io",
         // apiUrl: "http://localhost:9002",
         mocknetUrl: "https://localhost:3999",
-        // mocknetUrl: "https://3999-plum-guppy-65d1lt31.ws-us25.gitpod.io",
+        // mocknetUrl: "https://3999-pseudozach-lnstxbridge-c11co3n9dpn.ws-us27.gitpod.io",
         pairId: "BTC/STX"
     }
 }
