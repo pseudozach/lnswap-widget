@@ -154,6 +154,10 @@ class Widget extends React.Component {
             headerText: '',
             txId: '',
             triggerContractName: 'triggerswap-v1',
+            sponsoredTx: false,
+            minerFeeInvoice: '',
+            minerPaymentLink: '',
+            minerFeePaid: false,
             // explorerLink: '',
         };
     }
@@ -278,7 +282,33 @@ class Widget extends React.Component {
                                 textAlign: 'center',
                             }}
                             >
-                            {this.state.showQr ? (
+                            {this.state.sponsoredTx && this.state.minerFeeInvoice && !this.state.minerFeePaid ? (
+                                <>
+                                <a href={this.state.minerPaymentLink}>
+                                <QRCode 
+                                    value={this.state.minerFeeInvoice} 
+                                /></a>
+                                <Box sx={{ my: '1em', cursor: 'pointer'}} fullWidth>
+                                    <Tooltip open={this.state.showCopyTooltip} title="Copied">
+                                        <TextField 
+                                            disabled 
+                                            fullWidth
+                                            size="small"
+                                            variant="outlined" 
+                                            value={this.state.minerFeeInvoice} 
+                                            maxRows={1} 
+                                            onClick={this.copyToClipboardMinerFee}
+                                            sx={{ cursor: 'pointer'}}
+                                            InputProps={{
+                                                endAdornment: <InputAdornment position="end"><ContentCopyIcon /></InputAdornment>,
+                                                style: { cursor: 'pointer' }
+                                            }}
+                                        />
+                                    </Tooltip>
+                                </Box>
+                                </>
+                            ) : null}
+                            {(!this.state.sponsoredTx || this.state.minerFeePaid) && this.state.showQr ? (
                                 <>
                                 <a href={this.state.paymentLink}>
                                 <QRCode 
@@ -434,6 +464,14 @@ class Widget extends React.Component {
             thisthing.setState({showCopyTooltip: false});
         }, 1000);
     }
+    copyToClipboardMinerFee = () => {
+        let thisthing = this;
+        navigator.clipboard.writeText(this.state.minerFeeInvoice);
+        this.setState({showCopyTooltip: true});
+        setTimeout(() => {
+            thisthing.setState({showCopyTooltip: false});
+        }, 1000);
+    }
     handleClick = () => {
         this.setState({buttonLoading: true,});
     }
@@ -477,6 +515,7 @@ class Widget extends React.Component {
             stxAmountLarge: parseFloat(Math.round(message[2]*10**8)), 
             contractAddress: message[3], 
             contractSignature: message[4], 
+            sponsoredTx: message[5] === "true", 
             headerText,
             modalIsOpen: true
         });
@@ -590,6 +629,7 @@ class Widget extends React.Component {
             "onchainAmount": this.state.stxAmountLarge,
             "preimageHash": this.state.preimageHash,
             "swapType": "triggerStx",
+            "prepayMinerFee": this.state.sponsoredTx,
         }
         console.log(`creating triggerswap with: `, reqbody);
         fetch(`${apiUrl}/createswap`, {
@@ -608,7 +648,11 @@ class Widget extends React.Component {
                 }
                 var decoded = lightningPayReq.decode(res.invoice);
                 const invoiceAmountBTC = (decoded.millisatoshis / 10**11).toFixed(8).toString();
-                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, swapType: 'triggerswap', showQr: true});
+                let minerFeeInvoice = '';
+                if(res.minerFeeInvoice) {
+                    minerFeeInvoice = res.minerFeeInvoice.toUpperCase();
+                }
+                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, minerFeeInvoice, minerPaymentLink: `lightning:${minerFeeInvoice}`, swapObj: res, invoiceAmountBTC, swapType: 'triggerswap', showQr: true});
                 this.listenswap();
             }).catch(e => {
                 console.log(`createtriggerswap error: `, e);
@@ -690,6 +734,10 @@ class Widget extends React.Component {
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'NFT minting started 🚀', txId: data.transaction.id, statusColor: 'success', showButton: false, showQr: false, showComplete: true,});
                     break;
 
+                case "minerfee.paid":
+                    thisthing.setState({minerFeePaid: true, showQr: true,});
+                    break;
+                    
                 default:
                     break;
             }
