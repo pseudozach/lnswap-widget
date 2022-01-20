@@ -148,12 +148,12 @@ class Widget extends React.Component {
             showCopyTooltip: false,
             swapType: '',
             nftAddress: '',
-            contractSignature: 'claim-for',
+            contractSignature: 'claim',
             stxAmount: 0,
             stxAmountLarge: 0,
             headerText: '',
             txId: '',
-            triggerContractName: 'triggerswap-v1',
+            triggerContractName: 'triggerswap-v2',
             sponsoredTx: false,
             minerFeeInvoice: '',
             minerPaymentLink: '',
@@ -893,7 +893,7 @@ class Widget extends React.Component {
       
         let paddedamount = swapamount.padStart(32, "0");
         let paddedtimelock = timeLock.toString(16).padStart(32, "0");
-        // console.log("amount, timelock ", smallamount, swapamount, paddedamount, paddedtimelock);
+        // console.log("amount, timelock, activeNetwork ", smallamount, swapamount, paddedamount, paddedtimelock, activeNetwork);
       
         // (triggerStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)) (nftPrincipal <claim-for-trait>) (userPrincipal principal)
         const functionArgs = [
@@ -903,7 +903,7 @@ class Widget extends React.Component {
           bufferCV(Buffer.from('01','hex')),
           bufferCV(Buffer.from(paddedtimelock,'hex')),
           contractPrincipalCV(nftAddress, nftName),
-          standardPrincipalCV(this.state.claimAddress),
+        //   standardPrincipalCV(this.state.claimAddress), // removed on triggerswap-v2
         ];
         const txOptions = {
           contractAddress: contractAddress,
