@@ -65,6 +65,16 @@
     </div>
     <div><button onclick="startTriggerSwap();">Launch LNSwap Widget</button></div>
 
+    <h4 style="margin-bottom: 2px;">Try on mainnet now: Mint a Cube NFT with 1-click via Lightning</h4>
+    <div>
+        <!-- <p></p> -->
+        <div style="margin:4px; margin-left:0;">
+            <span>Your Hiro Wallet STX Address</span>
+            <input type="text" class="stxaddress" placeholder="SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX" style="min-width: 400px;"/>
+        </div>
+        <button onclick="startTriggerSwapDemo();">Mint a Cube</button>
+    </div>
+
     <h2>Integration Instructions for Stacks App Developers</h2>
     <!-- <p>Stacks App would integrate the swap tool as below:</p> -->
 
@@ -132,6 +142,19 @@
                 return false;
             }
             console.log('starting triggerswap with ', stxaddress, stxamount);
+            lnswap('swap', 'triggerswap', stxaddress, stxamount, contractAddress, contractSignature, sponsoredTx);
+        }
+        function startTriggerSwapDemo(){
+            const stxaddress = document.getElementsByClassName('stxaddress')[3].value;
+            const stxamount = 5;
+            const contractAddress = 'SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX.cube';
+            const contractSignature = 'claim';
+            const sponsoredTx = 'false';
+            if(!stxaddress || !stxamount || !contractAddress || !contractSignature) {
+                alert('please provide required values');
+                return false;
+            }
+            console.log('starting triggerswapdemo with ', stxaddress, stxamount);
             lnswap('swap', 'triggerswap', stxaddress, stxamount, contractAddress, contractSignature, sponsoredTx);
         }
     </script>
