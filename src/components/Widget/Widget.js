@@ -62,12 +62,17 @@ let activeNetwork = mocknet
 
 // let stacksNetworkType = "mocknet";
 if(Config.apiUrl.includes("lnswap")){
+    // console.log('network is mainnet')
   activeNetwork = mainnet
-} else if(Config.apiUrl.includes("gitpod") || Config.apiUrl.includes("localhost")){
-  activeNetwork = mocknet
 } else {
-  activeNetwork = testnet
+    // if(Config.apiUrl.includes("gitpod") || Config.apiUrl.includes("localhost"))
+    // console.log('network is mocknet ', mocknet, Config.mocknetUrl)
+  activeNetwork = mocknet
 }
+//  else {
+//     console.log('network is testnet')
+//   activeNetwork = testnet
+// }
 
 const widgetName = Config.name;
 const apiUrl = Config.apiUrl;
@@ -153,12 +158,13 @@ class Widget extends React.Component {
             stxAmountLarge: 0,
             headerText: '',
             txId: '',
-            triggerContractName: 'triggerswap-v2',
+            triggerContractName: 'triggerswap-v3',
             sponsoredTx: false,
             minerFeeInvoice: '',
             minerPaymentLink: '',
             minerFeePaid: false,
             // explorerLink: '',
+            receiverAddress: '',
         };
     }
 
@@ -433,6 +439,10 @@ class Widget extends React.Component {
                     this.triggerStx();
                     break;
 
+                case 'triggertransferswap':
+                    this.triggerTransferStx();
+                    break;
+
                 default:    
                     console.log(`swapType not found `, this.state.swapType)
                     break;
@@ -516,6 +526,7 @@ class Widget extends React.Component {
             contractAddress: message[3], 
             contractSignature: message[4], 
             sponsoredTx: message[5] === "true", 
+            receiverAddress: message[6] || "",
             headerText,
             modalIsOpen: true
         });
@@ -556,6 +567,7 @@ class Widget extends React.Component {
                         break;
 
                     case 'triggerswap':
+                    case 'triggertransferswap':
                         this.createTriggerSwap();
                         break;
 
@@ -654,7 +666,7 @@ class Widget extends React.Component {
                     minerFeeInvoice = res.minerFeeInvoice.toUpperCase();
                     showStatus = true;
                 }
-                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, minerFeeInvoice, minerPaymentLink: `lightning:${minerFeeInvoice}`, swapObj: res, invoiceAmountBTC, swapType: 'triggerswap', showQr: true, swapStatus: 'This invoice is for the transaction fee' , showStatus, });
+                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, minerFeeInvoice, minerPaymentLink: `lightning:${minerFeeInvoice}`, swapObj: res, invoiceAmountBTC, showQr: true, swapStatus: 'This invoice is for the transaction fee' , showStatus, });
                 this.listenswap();
             }).catch(e => {
                 console.log(`createtriggerswap error: `, e);
@@ -909,6 +921,119 @@ class Widget extends React.Component {
           contractAddress: contractAddress,
           contractName: this.state.triggerContractName,
           functionName: 'triggerStx',
+          functionArgs: functionArgs,
+          // validateWithAbi: true,
+          network: activeNetwork,
+          postConditionMode: PostConditionMode.Deny,
+          postConditions,
+          sponsored: this.state.sponsoredTx,
+          // anchorMode: AnchorMode.Any,
+          onFinish: data => {
+            console.log('Stacks claim onFinish:', data);
+            if(!this.state.sponsoredTx) {
+                this.setState({txId: data.txId});
+            } else {
+                // sponsored tx - send signed tx to backend to broadcast
+                const serializedTx = data.stacksTransaction.serialize().toString('hex');
+                this.broadcastSponsoredTx(serializedTx);
+            }
+          },
+          onCancel: data => {
+            console.log('Stacks claim onCancel:', data);   
+            thisthing.setState({buttonLoading: false});
+          }
+        };
+        await openContractCall(txOptions);
+    }
+    triggerTransferStx = async() => {  
+        let thisthing = this;
+
+        this.setState({buttonLoading: true,});
+        console.log("triggerTransferStx swapObj: ", this.state.swapObj);
+        let contractAddress = this.state.swapObj.lockupAddress.split(".")[0].toUpperCase();
+        let contractName = this.state.swapObj.lockupAddress.split(".")[1]
+        // console.log("claimStx ", contractAddress, contractName)
+
+        const nftAddress = this.state.contractAddress.split(".")[0].toUpperCase();
+        const nftName = this.state.contractAddress.split(".")[1];
+      
+        let preimage = this.state.preimage;
+        // let amount = this.state.swapObj.onchainAmount;
+        let amount = this.state.stxAmountLarge;
+        let timeLock = this.state.swapObj.timeoutBlockHeight;
+      
+        console.log(`triggerTransferStx claiming ${amount} Stx with preimage ${preimage} and timelock ${timeLock} for nft ${nftAddress} ${nftName} and send to ${this.state.claimAddress}`);
+      
+        // console.log("amount, decimalamount: ", amount)
+        let smallamount = parseInt(amount / 100)
+        //  + 1 -> never do this
+        // console.log("smallamount: " + smallamount)
+      
+        let swapamount = smallamount.toString(16).split(".")[0] + "";
+
+        // post conditions disabled - couldnt make it work for some reason
+        let postConditionAmount = Math.ceil(parseInt(smallamount));
+        const postConditionAddress = contractAddress;
+        const postConditionCode = FungibleConditionCode.LessEqual;
+
+        // // With a contract principal
+        // const contractAddress = 'SPBMRFRPPGCDE3F384WCJPK8PQJGZ8K9QKK7F59X';
+        // const contractName = 'test-contract';
+
+        // // With a standard principal
+        // // const postConditionAddress = 'SP2ZD731ANQZT6J4K3F5N8A40ZXWXC1XFXHVVQFKE';
+        // const nftPostConditionCode = NonFungibleConditionCode.Owns;
+        // // const assetAddress = 'SP62M8MEFH32WGSB7XSF9WJZD7TQB48VQB5ANWSJ';
+        // // const assetContractName = 'test-asset-contract';
+        // const assetName = 'cube';
+        // const tokenAssetName = stringAsciiCV('cube');
+        // const nonFungibleAssetInfo = createAssetInfo(nftAddress, nftName, assetName);
+
+        // const standardNonFungiblePostCondition = makeStandardNonFungiblePostCondition(
+        //     this.state.claimAddress,
+        //     nftPostConditionCode,
+        //     nonFungibleAssetInfo,
+        //     tokenAssetName
+        // );
+
+        const standardStxPostCondition = makeStandardSTXPostCondition(
+            this.state.claimAddress,
+            FungibleConditionCode.LessEqual,
+            postConditionAmount
+        );
+
+        const postConditions = [
+          makeContractSTXPostCondition(
+            postConditionAddress,
+            contractName,
+            postConditionCode,
+            postConditionAmount
+          ),
+            // standardNonFungiblePostCondition
+            standardStxPostCondition
+        ];
+      
+        // console.log("postConditions: " + contractAddress, contractName, postConditionCode, postConditionAmount)
+      
+      
+        let paddedamount = swapamount.padStart(32, "0");
+        let paddedtimelock = timeLock.toString(16).padStart(32, "0");
+        // console.log("amount, timelock, activeNetwork ", smallamount, swapamount, paddedamount, paddedtimelock, activeNetwork);
+      
+        // (triggerStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)) (nftPrincipal <claim-for-trait>) (userPrincipal principal)
+        const functionArgs = [
+          bufferCV(Buffer.from(preimage,'hex')),
+          bufferCV(Buffer.from(paddedamount,'hex')),
+          bufferCV(Buffer.from('01','hex')),
+          bufferCV(Buffer.from('01','hex')),
+          bufferCV(Buffer.from(paddedtimelock,'hex')),
+        //   contractPrincipalCV(nftAddress, nftName),
+          standardPrincipalCV(this.state.receiverAddress),
+        ];
+        const txOptions = {
+          contractAddress: contractAddress,
+          contractName: this.state.triggerContractName,
+          functionName: 'triggerTransferStx',
           functionArgs: functionArgs,
           // validateWithAbi: true,
           network: activeNetwork,
