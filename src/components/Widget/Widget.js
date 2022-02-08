@@ -74,6 +74,12 @@ if(Config.apiUrl.includes("lnswap")){
 //   activeNetwork = testnet
 // }
 
+
+// danger!!! use only for testing
+// const appConfig = new AppConfig(['store_write', 'publish_data']);
+// let userSession = new UserSession({ appConfig });
+// userSession.signUserOut();
+
 const widgetName = Config.name;
 const apiUrl = Config.apiUrl;
 const pairId = Config.pairId;
@@ -512,7 +518,7 @@ class Widget extends React.Component {
     setMessage = (...message) => {
         console.log(`swapParams: `, message)
         let headerText;
-        if(message[0] === 'reversesubmarine') {
+        if(message[0] === 'reversesubmarine' || message[0] === 'triggertransferswap') {
             headerText = 'Send BTC, Receive STX'
         } else {
             headerText = 'Send BTC, Receive NFT'
@@ -962,7 +968,7 @@ class Widget extends React.Component {
         let amount = this.state.stxAmountLarge;
         let timeLock = this.state.swapObj.timeoutBlockHeight;
       
-        console.log(`triggerTransferStx claiming ${amount} Stx with preimage ${preimage} and timelock ${timeLock} for nft ${nftAddress} ${nftName} and send to ${this.state.claimAddress}`);
+        console.log(`triggerTransferStx claiming ${amount} Stx with preimage ${preimage} and timelock ${timeLock} and send to ${this.state.receiverAddress}`);
       
         // console.log("amount, decimalamount: ", amount)
         let smallamount = parseInt(amount / 100)
@@ -1037,6 +1043,7 @@ class Widget extends React.Component {
           functionArgs: functionArgs,
           // validateWithAbi: true,
           network: activeNetwork,
+        //   postConditionMode: PostConditionMode.Allow,
           postConditionMode: PostConditionMode.Deny,
           postConditions,
           sponsored: this.state.sponsoredTx,
