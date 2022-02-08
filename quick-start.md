@@ -55,8 +55,9 @@ lnswap('swap',
        'user stx address', 
        'amount in STX', 
        '(only for mintnft/triggerswap) NFT Contract Address',
-       '(only for mintnft) NFT Mint Function Name'
-       'sponsored transaction');
+       '(only for mintnft) NFT Mint Function Name',
+       'sponsored transaction'
+       '(only for triggertransferswap) receiver stx address');
 ```
 
 
@@ -72,7 +73,7 @@ lnswap('swap',
 ```
 {% endtab %}
 
-{% tab title="Mint with Lightning" %}
+{% tab title="Mint with LN" %}
 ```javascript
 // e.g. (Non-Custodial) Mint NFT with Lightning 
 lnswap('swap', 
@@ -84,7 +85,21 @@ lnswap('swap',
 ```
 {% endtab %}
 
-{% tab title="Custodial Mint with Lightning" %}
+{% tab title="Send STX with LN" %}
+```javascript
+// e.g. Send STX with Lightning 
+lnswap('swap', 
+       'triggertransferswap', 
+       'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF',
+       25, 
+       '',
+       '',
+       'false',
+       'ST1GH2VFAZ7ZB02JHBTMJSQYKJ83ESCNBZ0PJ4MMQ');
+```
+{% endtab %}
+
+{% tab title="Custodial Mint with LN" %}
 ```javascript
 // e.g. (Custodial) Mint NFT with Lightning 
 lnswap('swap', 
