@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import Widget from './components/Widget/Widget';
 import Config from './config';
+import WebFont from "webfontloader";
+WebFont.load({google: {families: ["Roboto:300,400,500"]}});
 
 const widgetName = Config.name;
 const widgetConfigName = widgetName + 'Config'

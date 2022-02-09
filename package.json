@@ -40,7 +40,8 @@
     "react": "^16.14.0",
     "react-dom": "^16.10.2",
     "react-modal": "^3.14.3",
-    "react-qr-code": "^2.0.2"
+    "react-qr-code": "^2.0.2",
+    "webfontloader": "^1.6.28"
   },
   "babel": {
     "presets": [

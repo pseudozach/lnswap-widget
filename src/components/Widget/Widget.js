@@ -10,6 +10,8 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import { FormControl } from '@mui/material';
 import InputAdornment from '@mui/material/InputAdornment';
 import QRCode from "react-qr-code";
 import CircularProgress from '@mui/material/CircularProgress';
@@ -21,6 +23,8 @@ import LockIcon from '@mui/icons-material/Lock';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { OpenInNew } from '@mui/icons-material';
+import Paper from '@mui/material/Paper';
 import lightningPayReq from 'bolt11';
 
 import { StacksTestnet, StacksMocknet, StacksMainnet } from '@stacks/network';
@@ -96,16 +100,18 @@ const customStyles = {
   };
 
   const style = {
-    position: 'absolute',
-    top: '40%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 400,
+    // position: 'absolute',
+    // top: '40%',
+    // left: '50%',
+    // transform: 'translate(-50%, -50%)',
+    // width: 400,
     bgcolor: 'background.paper',
-    border: '1px solid #000',
+    // border: '1px solid #000',
     boxShadow: 24,
-    p: 4,
+    // p: 4,
     width: 'fit-content',
+    borderRadius: 2,
+    outline: 'none !important',
   };
 
   const nounderline = {
@@ -120,6 +126,40 @@ const customStyles = {
     height:'100%',
     display:'block',
     maxHeight: '90%',
+  }
+
+  const centeredView = {
+    display: 'flex',
+    flex: 1,
+    // justifyContent: "center",
+    alignItems: "center",
+    marginTop: 4,
+    marginBottom: 4,
+    paddingTop: 2,
+    borderRadius: 8,
+    overflow: 'auto',
+
+    display: 'flex',
+    flex: '1 1 0%',
+    justifyContent: 'space-between',
+    alignContent: 'center',
+    flexWrap: 'wrap',
+    flexDirection: 'column',
+  }
+  const modalView = {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5
   }
 
   const randomBytes = size => {
@@ -146,7 +186,7 @@ class Widget extends React.Component {
             paymentLink: 'invoice',
             showLoading: true,
             showButton: false,
-            swapId: '',
+            swapId: '-',
             swapObj: {},
             invoice: '',
             showStatus: false,
@@ -162,7 +202,7 @@ class Widget extends React.Component {
             contractSignature: 'claim',
             stxAmount: 0,
             stxAmountLarge: 0,
-            headerText: '',
+            headerText: 'Preparing Swap...',
             txId: '',
             triggerContractName: 'triggerswap-v3',
             sponsoredTx: false,
@@ -208,33 +248,53 @@ class Widget extends React.Component {
                 onClose={this.handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
-                style={scrollModalStyle}
+                style={centeredView}
                 >
                     <Box sx={style}>
-                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center' }}>
+                        {/* <View sx={{backgroundColor: 'black', height: 20}}>
+
+                        </View> */}
+                        <Paper elevation={0} sx={{backgroundColor: '#f8f4fc', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottomLeftRadius: 0, borderBottomRightRadius: 0,}}>
+                            <img src="./assets/btc.svg" height='32' style={{marginRight:24, position: 'absolute', zIndex: 21,}}/>
+                            <img src="./assets/stx.svg" height='32' style={{marginLeft:24}}/>
+                        </Paper>
+                        <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center', mt: 2 }}>
                         {this.state.headerText}
                         </Typography>
-                        <Typography id="modal-modal-description" sx={{ mt: 2, mb: 2 }}>
+                        <Typography id="modal-modal-description" variant="body1" sx={{ mb: 2, mx: 2, fontWeight: 100, textAlign: 'center', }}>
                         Confirm details and pay the LN invoice to start the swap.
                         </Typography>
+                        <Divider sx={{ mb:2 }} />
                         <Box
                             component="form"
                             sx={{
-                                '& .MuiTextField-root': { m: 1, width: '25ch' }, display: 'inline-flex',
+                                '& .MuiTextField-root': { m: 1, width: '25ch' }, display: 'inline-flex', px:4
                             }}
                             noValidate
                             autoComplete="off"
                             >
+                                <TextField
+                                    disabled
+                                    sx={{ m: 1, width: '25ch', input: {
+                                        "-webkit-text-fill-color": `black !important`,
+                                        color: `black !important`,
+                                    },}}
+                                    id="input-rate"
+                                    label={pairId + " Rate"}
+                                    value={this.state.rate}
+                                />
+                                {/* <FormControl variant="standard">
+                                    <InputLabel htmlFor="input-rate">
+                                        {pairId + " Rate"}
+                                    </InputLabel>
+                                    
+                                </FormControl> */}
                             <TextField
                             disabled
-                            sx={{ m: 1, width: '25ch', }}
-                            id="outlined-required"
-                            label={pairId + " Rate"}
-                            value={this.state.rate}
-                            />
-                            <TextField
-                            disabled
-                            sx={{ m: 1, width: '25ch', }}
+                            sx={{ m: 1, width: '25ch', input: {
+                                "-webkit-text-fill-color": `black !important`,
+                                color: `black !important`,
+                            },}}
                             id="outlined-required"
                             label="Fee"
                             value={this.state.fee}
@@ -246,19 +306,24 @@ class Widget extends React.Component {
                         <Box
                             component="form"
                             sx={{
-                                '& .MuiTextField-root': { m: 1, width: '25ch' },
+                                '& .MuiTextField-root': { m: 1, width: '25ch' }, px:4
                             }}
                             noValidate
                             autoComplete="off"
                             >
                             <TextField
                             disabled
-                            sx={{ m: 1, width: '25ch', }}
+                            sx={{ m: 1, width: '25ch', input: {
+                                "-webkit-text-fill-color": `black !important`,
+                                color: `black !important`,
+                            },}}
                             id="outlined-required"
                             label="Send"
                             value={this.state.invoiceAmountBTC}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start">฿</InputAdornment>,
+                                startAdornment: <InputAdornment position="start">
+                                        <img src="./assets/btc.svg" height='16' style={{ marginRight:4 }}/>BTC
+                                    </InputAdornment>,
                                 }}
                             />
                             {/* <TextField
@@ -268,17 +333,21 @@ class Widget extends React.Component {
                             label="Amount To Pay"
                             value={this.state.invoiceAmount}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start">sats</InputAdornment>,
+                                startAdornment: <InputAdornment position="start">sats - ฿</InputAdornment>,
                                 }}
                             /> */}
                             <TextField
                             disabled
-                            sx={{ m: 1, width: '25ch', }}
+                            sx={{ m: 1, width: '25ch', input: {
+                                "-webkit-text-fill-color": `black !important`,
+                                color: `black !important`,
+                            },}}
                             id="outlined-required"
                             label="Receive"
                             value={this.state.stxAmount}
                             InputProps={{
-                                startAdornment: <InputAdornment position="start">STX</InputAdornment>,
+                                startAdornment: <InputAdornment position="start">
+                                    <img src="./assets/stx.svg" height='16' style={{ marginRight:4 }}/>STX</InputAdornment>,
                                 }}
                             />
                         </Box>
@@ -288,7 +357,7 @@ class Widget extends React.Component {
                                 // bgcolor: 'primary.main',
                                 // color: '#fff',
                                 // width: 200,
-                                // p: 1,
+                                px:4,
                                 // m: 1,
                                 // borderRadius: 1,
                                 textAlign: 'center',
@@ -296,37 +365,44 @@ class Widget extends React.Component {
                             >
                             {this.state.sponsoredTx && this.state.minerFeeInvoice && !this.state.minerFeePaid ? (
                                 <>
-                                <a href={this.state.minerPaymentLink}>
-                                <QRCode 
-                                    value={this.state.minerFeeInvoice} 
-                                /></a>
-                                <Box sx={{ my: '1em', cursor: 'pointer'}} fullWidth>
-                                    <Tooltip open={this.state.showCopyTooltip} title="Copied">
-                                        <TextField 
-                                            disabled 
-                                            fullWidth
-                                            size="small"
-                                            variant="outlined" 
+                                    <Box sx={{backgroundColor: '#f8f4fc', p:2, mx:1, borderRadius: 2}}>
+                                        <a href={this.state.minerPaymentLink}>
+                                        <QRCode 
                                             value={this.state.minerFeeInvoice} 
-                                            maxRows={1} 
-                                            onClick={this.copyToClipboardMinerFee}
-                                            sx={{ cursor: 'pointer'}}
-                                            InputProps={{
-                                                endAdornment: <InputAdornment position="end"><ContentCopyIcon /></InputAdornment>,
-                                                style: { cursor: 'pointer' }
-                                            }}
-                                        />
-                                    </Tooltip>
-                                </Box>
+                                        /></a>
+                                    </Box>
+                                    <Box sx={{ my: 1, mx:1,  cursor: 'pointer'}} fullWidth>
+                                        <Tooltip open={this.state.showCopyTooltip} title="Copied">
+                                            <TextField 
+                                                disabled 
+                                                fullWidth
+                                                size="small"
+                                                variant="outlined" 
+                                                value={this.state.minerFeeInvoice} 
+                                                maxRows={1} 
+                                                onClick={this.copyToClipboardMinerFee}
+                                                sx={{ cursor: 'pointer', input: {
+                                                    "-webkit-text-fill-color": `black !important`,
+                                                    color: `black !important`,
+                                                },}}
+                                                InputProps={{
+                                                    endAdornment: <InputAdornment position="end"><ContentCopyIcon style={{color: 'black'}}/></InputAdornment>,
+                                                    style: { cursor: 'pointer' }
+                                                }}
+                                            />
+                                        </Tooltip>
+                                    </Box>
                                 </>
                             ) : null}
                             {(!this.state.sponsoredTx || this.state.minerFeePaid) && this.state.showQr ? (
                                 <>
-                                <a href={this.state.paymentLink}>
-                                <QRCode 
-                                    value={this.state.invoice} 
-                                /></a>
-                                <Box sx={{ my: '1em', cursor: 'pointer'}} fullWidth>
+                                <Box sx={{backgroundColor: '#f8f4fc', p:2, mx:1, borderRadius: 2}}>
+                                    <a href={this.state.paymentLink}>
+                                    <QRCode 
+                                        value={this.state.invoice} 
+                                    /></a>
+                                </Box>
+                                <Box sx={{ my: 1, mx:1,  cursor: 'pointer'}} fullWidth>
                                     <Tooltip open={this.state.showCopyTooltip} title="Copied">
                                         <TextField 
                                             disabled 
@@ -336,9 +412,12 @@ class Widget extends React.Component {
                                             value={this.state.invoice} 
                                             maxRows={1} 
                                             onClick={this.copyToClipboard}
-                                            sx={{ cursor: 'pointer'}}
+                                            sx={{ cursor: 'pointer', input: {
+                                                "-webkit-text-fill-color": `black !important`,
+                                                color: `black !important`,
+                                            },}}
                                             InputProps={{
-                                                endAdornment: <InputAdornment position="end"><ContentCopyIcon /></InputAdornment>,
+                                                endAdornment: <InputAdornment position="end"><ContentCopyIcon style={{color: 'black'}}/></InputAdornment>,
                                                 style: { cursor: 'pointer' }
                                             }}
                                         />
@@ -346,33 +425,41 @@ class Widget extends React.Component {
                                 </Box>
                                 </>
                             ) : null}
-                            {this.state.swapStatus.includes("lock") ? (<LockIcon color="theme.palette.success.dark" fontSize="large" sx={{ fontSize: '5em'}} />) : null}
-                            {this.state.swapStatus.includes("fail") ? (<CancelIcon color="theme.palette.error.dark" fontSize="large" sx={{ fontSize: '5em'}} />) : null}
-                            {this.state.showComplete ? (
-                                <CheckCircleIcon color="success" fontSize="large" sx={{ fontSize: '5em'}} />
-                            ) : null}
+
                             {this.state.showStatus ? (
-                                <Typography variant="body1" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center' }} color={this.state.statusColor}>
-                                {this.state.swapStatus}
-                                </Typography>
+                                <Paper variant="outlined" sx={{backgroundColor: '#f8f4fc', m:1, py:1, mb:2, display: 'flex', }} fullWidth>
+                                    {/* fontSize="large" sx={{ fontSize: '5em'}} */}
+                                    {this.state.swapStatus.includes("lock") ? (<LockIcon color="secondary" fontSize="large" sx={{m:1, fontSize: 36}}/>) : null}
+                                    {(this.state.swapStatus.includes("fail") || this.state.swapStatus.includes("Unable to reach")) ? (<CancelIcon color="error" fontSize="large" sx={{m:1, fontSize: 36}} />) : null}
+                                    {this.state.showComplete ? (
+                                        <CheckCircleIcon color="success" fontSize="large" sx={{m:1, fontSize: 36}} />
+                                    ) : null}
+                                    <Typography variant="body1" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center', display: 'flex', alignItems: 'center', marginBottom: 0, }} color={this.state.statusColor}>
+                                    {this.state.swapStatus}
+                                    </Typography>
+                                </Paper>
                             ) : null}
                             {this.state.txId ? (
-                                <a href={`https://explorer.stacks.co/txid/${this.state.txId}?chain=mainnet`} target="_blank">
-                                    <Typography variant="body1" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center' }} color={this.state.statusColor}>
-                                    View on Stacks Explorer
-                                    </Typography>
-                                </a>
+                                    <Button variant="outlined" color="secondary" sx={{mt:1}} endIcon={<OpenInNew style={{color: 'black'}}/>} href={`https://explorer.stacks.co/txid/${this.state.txId}?chain=mainnet`} target="_blank">
+                                      View on Stacks Explorer
+                                    </Button>
+                                // <a href={`https://explorer.stacks.co/txid/${this.state.txId}?chain=mainnet`} target="_blank">
+                                //     <Typography variant="body1" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center' }} color={this.state.statusColor}>
+                                //     View on Stacks Explorer
+                                //     </Typography>
+                                // </a>
                             ) : null}
                         </Box>
-                        <Divider sx={{ m: 2 }} />
+                        <Divider sx={{ my: 2 }} />
                         {this.state.showLoading ? (<CircularProgress sx={{ mx: 'auto', textAlign: 'center', display: 'block', margin: 'auto' }} />) : null}
                         {this.state.showButton ? (
                             <Box
-                                sx={{mx: 'auto',textAlign: 'center',}}>
+                                sx={{px: 5,textAlign: 'center',}}>
                                 <LoadingButton
-                                    sx={{ mx: 'auto'}}
+                                    fullWidth
+                                    sx={{ }}
                                     onClick={this.connectStacksWallet}
-                                    endIcon={<SendIcon />}
+                                    // endIcon={<SendIcon />}
                                     loading={this.state.buttonLoading}
                                     loadingPosition="end"
                                     variant="contained"
@@ -386,7 +473,7 @@ class Widget extends React.Component {
                         <Box
                             component="form"
                             sx={{
-                                '& .MuiTextField-root': { m: 1, width: '25ch', color: 'gray' },
+                                '& .MuiTextField-root': { m: 1, width: '25ch', color: 'gray' }, m:3,
                             }}
                             noValidate
                             autoComplete="off"
@@ -395,7 +482,7 @@ class Widget extends React.Component {
                                 variant="caption" 
                                 display="block" 
                                 gutterBottom
-                                sx={{ float: 'left' }}
+                                sx={{ float: 'left', mb:1, color: 'gray'  }}
                             >
                                 Swap ID: {this.state.swapId}
                             </Typography>
@@ -403,7 +490,7 @@ class Widget extends React.Component {
                                 variant="caption" 
                                 display="block" 
                                 gutterBottom
-                                sx={{ float: 'right' }}
+                                sx={{ float: 'right', mb:1, color: 'gray'  }}
                             >
                                 powered by <a href="https://LNSwap.org" target="_blank" style={nounderline}>LNSwap.org</a>
                             </Typography>
@@ -531,7 +618,7 @@ class Widget extends React.Component {
             stxAmountLarge: parseFloat(Math.round(message[2]*10**8)), 
             contractAddress: message[3], 
             contractSignature: message[4], 
-            sponsoredTx: message[5] === "true", 
+            sponsoredTx: message[5] === "true" || message[5] === true, 
             receiverAddress: message[6] || "",
             headerText,
             modalIsOpen: true
