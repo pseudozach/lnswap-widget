@@ -255,8 +255,8 @@ class Widget extends React.Component {
 
                         </View> */}
                         <Paper elevation={0} sx={{backgroundColor: '#f8f4fc', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottomLeftRadius: 0, borderBottomRightRadius: 0,}}>
-                            <img src="./assets/btc.svg" height='32' style={{marginRight:24, position: 'absolute', zIndex: 21,}}/>
-                            <img src="./assets/stx.svg" height='32' style={{marginLeft:24}}/>
+                            <img src="https://widget.lnswap.org/assets/btc.svg" height='32' style={{marginRight:24, position: 'absolute', zIndex: 21,}}/>
+                            <img src="https://widget.lnswap.org/assets/stx.svg" height='32' style={{marginLeft:24}}/>
                         </Paper>
                         <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center', mt: 2 }}>
                         {this.state.headerText}
@@ -322,7 +322,7 @@ class Widget extends React.Component {
                             value={this.state.invoiceAmountBTC}
                             InputProps={{
                                 startAdornment: <InputAdornment position="start">
-                                        <img src="./assets/btc.svg" height='16' style={{ marginRight:4 }}/>BTC
+                                        <img src="https://widget.lnswap.org/assets/btc.svg" height='16' style={{ marginRight:4 }}/>BTC
                                     </InputAdornment>,
                                 }}
                             />
@@ -347,7 +347,7 @@ class Widget extends React.Component {
                             value={this.state.stxAmount}
                             InputProps={{
                                 startAdornment: <InputAdornment position="start">
-                                    <img src="./assets/stx.svg" height='16' style={{ marginRight:4 }}/>STX</InputAdornment>,
+                                    <img src="https://widget.lnswap.org/assets/stx.svg" height='16' style={{ marginRight:4 }}/>STX</InputAdornment>,
                                 }}
                             />
                         </Box>
