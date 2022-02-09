@@ -81,6 +81,7 @@ lnswap('swap',
        'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF', 
        25, 
        'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF.stacks-roots-v2',
+       'claim',
        'true');
 ```
 {% endtab %}
