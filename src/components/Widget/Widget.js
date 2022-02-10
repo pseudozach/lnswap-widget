@@ -24,6 +24,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { OpenInNew } from '@mui/icons-material';
+import InfoIcon from '@mui/icons-material/Info';
 import Paper from '@mui/material/Paper';
 import lightningPayReq from 'bolt11';
 
@@ -431,6 +432,7 @@ class Widget extends React.Component {
                                     {/* fontSize="large" sx={{ fontSize: '5em'}} */}
                                     {this.state.swapStatus.includes("lock") ? (<LockIcon color="secondary" fontSize="large" sx={{m:1, fontSize: 36}}/>) : null}
                                     {(this.state.swapStatus.includes("fail") || this.state.swapStatus.includes("Unable to reach")) ? (<CancelIcon color="error" fontSize="large" sx={{m:1, fontSize: 36}} />) : null}
+                                    {this.state.swapStatus.includes("This invoice is ") ? (<InfoIcon color="info" fontSize="large" sx={{m:1, fontSize: 36}} />) : null}
                                     {this.state.showComplete ? (
                                         <CheckCircleIcon color="success" fontSize="large" sx={{m:1, fontSize: 36}} />
                                     ) : null}
