@@ -397,7 +397,7 @@ class Widget extends React.Component {
                             ) : null}
                             {(!this.state.sponsoredTx || this.state.minerFeePaid) && this.state.showQr ? (
                                 <>
-                                <Box sx={{backgroundColor: '#f8f4fc', p:2, mx:1, borderRadius: 2}}>
+                                <Box sx={{backgroundColor: '#f8f4fc', p:2, mx:1, borderRadius: 2, display: 'flex', justifyContent: 'space-around',}}>
                                     <a href={this.state.paymentLink}>
                                     <QRCode 
                                         value={this.state.invoice} 
