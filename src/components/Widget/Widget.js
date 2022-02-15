@@ -677,7 +677,7 @@ class Widget extends React.Component {
                 // return e;
                 
                 // send status to host website
-                window.top.postMessage({target: 'lnswap', data: {txId, swapId, status: 'Unable to reach LNSwap'}}, '*')
+                window.top.postMessage({target: 'lnswap', data: {txId: this.state.txId, swapId: this.state.swapId, status: 'Unable to reach LNSwap'}}, '*')
             });     
     }
     createSwap = () => {
@@ -836,17 +836,17 @@ class Widget extends React.Component {
 
                 case "transaction.claimed":
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Claim successful 🚀', statusColor: 'success', showButton: false, showComplete: true,});
-                    window.top.postMessage({target: 'lnswap', data: {txId, swapId, status: 'Claim successful'}}, '*')
+                    window.top.postMessage({target: 'lnswap', data: {txId: this.state.txId, swapId: this.state.swapId, status: 'Claim successful'}}, '*')
                     break;
 
                 case "invoice.settled":
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Claim successful 🚀', statusColor: 'success', showButton: false, showComplete: true,});
-                    window.top.postMessage({target: 'lnswap', data: {txId, swapId, status: 'Claim successful'}}, '*')
+                    window.top.postMessage({target: 'lnswap', data: {txId: this.state.txId, swapId: this.state.swapId, status: 'Claim successful'}}, '*')
                     break;
 
                 case "nft.minted":
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'NFT minting started 🚀', txId: data.transaction.id, statusColor: 'success', showButton: false, showQr: false, showComplete: true,});
-                    window.top.postMessage({target: 'lnswap', data: {txId: data.transaction.id, swapId, status: 'NFT minting started'}}, '*')
+                    window.top.postMessage({target: 'lnswap', data: {txId: data.transaction.id, swapId: this.state.swapId, status: 'NFT minting started'}}, '*')
                     break;
 
                 case "minerfee.paid":

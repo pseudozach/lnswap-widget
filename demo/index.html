@@ -203,9 +203,9 @@
         }
         // listen to mint tx ID from the iframe
         window.onmessage = function(e) {
-            console.log('got event ', e);
+            console.log('got cross-origin event ', e);
             if (e.data && e.data.target && e.data.target === 'lnswap') {
-                console.log('received txid from lnswap widget: ', e.data);
+                console.log('received data from lnswap widget: ', e.data.data);
             }
         };
     </script>
