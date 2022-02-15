@@ -112,3 +112,25 @@ lnswap('swap',
 ```
 {% endtab %}
 {% endtabs %}
+
+{% hint style="info" %}
+Note that you can listen to widget updates from the host page via [cross-origin communications](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage).
+{% endhint %}
+
+```javascript
+// listen to swap events from the widget
+window.onmessage = function(e) {
+    if (e.data && e.data.target && e.data.target === 'lnswap') {
+        console.log('received data from lnswap widget: ', e.data.data);
+    }
+};
+
+// data will be in below format:
+{   target: 'lnswap', 
+    data: {
+        txId: 'Stacks txid if exists', 
+        swapId: 'ID of the Swap', 
+        status: 'Status of the swap'
+    }
+}
+```
