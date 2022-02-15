@@ -201,6 +201,13 @@
             console.log('starting triggerswapdemo with ', stxaddress, stxamount);
             lnswap('swap', 'triggerswap', stxaddress, stxamount, contractAddress, contractSignature, sponsoredTx);
         }
+        // listen to mint tx ID from the iframe
+        window.onmessage = function(e) {
+            console.log('got event ', e);
+            if (e.data && e.data.target && e.data.target === 'lnswap') {
+                console.log('received txid from lnswap widget: ', e.data);
+            }
+        };
     </script>
 </body>
 

@@ -675,6 +675,9 @@ class Widget extends React.Component {
                 console.log(`getpairs error `, e);
                 this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to reach LNSwap. Please try again later.', statusColor: 'error', showQr: false});
                 // return e;
+                
+                // send status to host website
+                window.top.postMessage({target: 'lnswap', data: {txId, swapId, status: 'Unable to reach LNSwap'}}, '*')
             });     
     }
     createSwap = () => {
@@ -833,14 +836,17 @@ class Widget extends React.Component {
 
                 case "transaction.claimed":
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Claim successful 🚀', statusColor: 'success', showButton: false, showComplete: true,});
+                    window.top.postMessage({target: 'lnswap', data: {txId, swapId, status: 'Claim successful'}}, '*')
                     break;
 
                 case "invoice.settled":
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Claim successful 🚀', statusColor: 'success', showButton: false, showComplete: true,});
+                    window.top.postMessage({target: 'lnswap', data: {txId, swapId, status: 'Claim successful'}}, '*')
                     break;
 
                 case "nft.minted":
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'NFT minting started 🚀', txId: data.transaction.id, statusColor: 'success', showButton: false, showQr: false, showComplete: true,});
+                    window.top.postMessage({target: 'lnswap', data: {txId: data.transaction.id, swapId, status: 'NFT minting started'}}, '*')
                     break;
 
                 case "minerfee.paid":
