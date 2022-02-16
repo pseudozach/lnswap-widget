@@ -698,7 +698,7 @@ class Widget extends React.Component {
             "preimageHash": this.state.preimageHash
         }
         console.log(`creating swap with: `, reqbody);
-        fetch(`${apiUrl}/createswap`, {
+        fetch(`${apiUrl}/zcreateswap`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -742,7 +742,7 @@ class Widget extends React.Component {
             "prepayMinerFee": this.state.sponsoredTx,
         }
         console.log(`creating triggerswap with: `, reqbody);
-        fetch(`${apiUrl}/createswap`, {
+        fetch(`${apiUrl}/zcreateswap`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
