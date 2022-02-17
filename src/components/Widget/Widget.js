@@ -74,6 +74,8 @@ if(Config.apiUrl.includes("lnswap")){
     // console.log('network is mocknet ', mocknet, Config.mocknetUrl)
   activeNetwork = mocknet
 }
+// console.log('activeNetwork ', Config.mocknetUrl, activeNetwork);
+
 //  else {
 //     console.log('network is testnet')
 //   activeNetwork = testnet
@@ -585,7 +587,7 @@ class Widget extends React.Component {
         this.setState({modalIsOpen: false});
     }
     resetState = () => {
-        this.setState({txId:'', swapStatus: '', showComplete: false, buttonLoading: false, minerFeePaid: false,}); 
+        this.setState({txId:'', swapStatus: '', showComplete: false, buttonLoading: false, minerFeePaid: false, showButton: false,}); 
     }
     createSecret = () => {
         // generate one-time-use preimage/preimageHash
