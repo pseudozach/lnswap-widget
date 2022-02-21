@@ -622,6 +622,7 @@ class Widget extends React.Component {
             contractSignature: message[4], 
             sponsoredTx: message[5] === "true" || message[5] === true, 
             receiverAddress: message[6] || "",
+            stxMemo: message[7] || "",
             headerText,
             modalIsOpen: true
         });
@@ -1130,6 +1131,7 @@ class Widget extends React.Component {
           bufferCV(Buffer.from(paddedtimelock,'hex')),
         //   contractPrincipalCV(nftAddress, nftName),
           standardPrincipalCV(this.state.receiverAddress),
+          stringAsciiCV(this.state.stxMemo),
         ];
         const txOptions = {
           contractAddress: contractAddress,

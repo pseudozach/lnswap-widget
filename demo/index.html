@@ -86,10 +86,10 @@
         <span>Receiver's STX Address</span>
         <input type="text" id="receiveraddress" placeholder="SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY" style="min-width: 400px;"/>
     </div>
-    <!-- <div style="margin:4px;">
-        <span>NFT Contract Claim/Mint Signature</span>
-        <input type="text" id="nccontractSignature" placeholder="claim" value="claim" style="min-width: 400px;"/>
-    </div> -->
+    <div style="margin:4px;">
+        <span>STX Transfer Memo</span>
+        <input type="text" id="stxmemo" placeholder="buy:xxx code:xxx" value="sample memo text" style="min-width: 400px;"/>
+    </div>
     <div style="margin:4px;">
         <span>Sponsored Transaction (Set to true if user has no STX)</span>
         <input type="text" id="sttssponsoredTx" placeholder="false" value="false"/>
@@ -179,14 +179,14 @@
             const stxaddress = document.getElementsByClassName('stxaddress')[3].value;
             const stxamount = document.getElementsByClassName('stxamount')[3].value;
             const receiveraddress= document.getElementById('receiveraddress').value;
-            // const contractSignature = document.getElementById('nccontractSignature').value;
+            const stxmemo = document.getElementById('stxmemo').value;
             const sponsoredTx = document.getElementById('sttssponsoredTx').value;
             if(!stxaddress || !stxamount || !receiveraddress) {
                 alert('please provide required values');
                 return false;
             }
-            console.log('starting triggertransferswap with ', stxaddress, stxamount, receiveraddress, sponsoredTx);
-            lnswap('swap', 'triggertransferswap', stxaddress, stxamount, '', '', sponsoredTx, receiveraddress);
+            console.log('starting triggertransferswap with ', stxaddress, stxamount, receiveraddress, sponsoredTx, stxmemo);
+            lnswap('swap', 'triggertransferswap', stxaddress, stxamount, '', '', sponsoredTx, receiveraddress, stxmemo);
         }
         function startTriggerSwapDemo(){
             const stxaddress = document.getElementsByClassName('stxaddress')[4].value;
