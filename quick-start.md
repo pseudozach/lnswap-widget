@@ -57,7 +57,8 @@ lnswap('swap',
        '(only for mintnft/triggerswap) NFT Contract Address',
        '(only for mintnft) NFT Mint Function Name',
        'sponsored transaction'
-       '(only for triggertransferswap) receiver stx address');
+       '(only for triggertransferswap) receiver stx address',
+       '(only for triggertransferswap) stx transfer memo');
 ```
 
 
@@ -96,7 +97,8 @@ lnswap('swap',
        '',
        '',
        'false',
-       'ST1GH2VFAZ7ZB02JHBTMJSQYKJ83ESCNBZ0PJ4MMQ');
+       'ST1GH2VFAZ7ZB02JHBTMJSQYKJ83ESCNBZ0PJ4MMQ',
+       'test memo description');
 ```
 {% endtab %}
 
