@@ -78,7 +78,7 @@ if(Config.apiUrl.includes("lnswap")){
 //     console.log('network is testnet')
 //   activeNetwork = testnet
 // }
-
+// console.log('widget network: ', Config.mocknetUrl, Config.apiUrl, activeNetwork)
 
 // danger!!! use only for testing
 // const appConfig = new AppConfig(['store_write', 'publish_data']);
@@ -205,7 +205,7 @@ class Widget extends React.Component {
             stxAmountLarge: 0,
             headerText: 'Preparing Swap...',
             txId: '',
-            triggerContractName: 'triggerswap-v3',
+            triggerContractName: Config.triggerContractName,
             sponsoredTx: false,
             minerFeeInvoice: '',
             minerPaymentLink: '',
@@ -901,7 +901,7 @@ class Widget extends React.Component {
       
         let paddedamount = swapamount.padStart(32, "0");
         let paddedtimelock = timeLock.toString(16).padStart(32, "0");
-        // console.log("amount, timelock ", smallamount, swapamount, paddedamount, paddedtimelock);
+        // console.log("amount, timelock ", smallamount, swapamount, paddedamount, paddedtimelock, activeNetwork);
       
         // (claimStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)))
         const functionArgs = [
