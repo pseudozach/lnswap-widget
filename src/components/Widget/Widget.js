@@ -217,33 +217,7 @@ class Widget extends React.Component {
 
     render() {
         if (this.state.modalIsOpen) {
-            return (
-                // <div className="widget-container">
-                //     <h1>I'm a {widgetName}</h1>
-                //     <div>I have a message: {this.state.message}</div>
-                // </div>
-
-                // <Modal
-                //     isOpen={this.state.modalIsOpen}
-                //     // onAfterOpen={afterOpenModal}
-                //     onRequestClose={this.closeModal}
-                //     style={customStyles}
-                //     ariaHideApp={false}
-                //     contentLabel="Example Modal"
-                // >
-                //     {/* ref={(_subtitle) => (subtitle = _subtitle)} */}
-                //     <h2>Hello</h2>
-                //     <button onClick={this.closeModal}>close</button>
-                //     <div>I am a modal</div>
-                //     <form>
-                //         <input />
-                //         <button>tab navigation</button>
-                //         <button>stays</button>
-                //         <button>inside</button>
-                //         <button>the modal</button>
-                //     </form>
-                // </Modal>
-                
+            return (                
                 <Modal
                 open={this.state.modalIsOpen}
                 onClose={this.handleClose}
