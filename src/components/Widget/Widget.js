@@ -429,7 +429,7 @@ class Widget extends React.Component {
                                     </Typography>
                                 </Paper>
                             ) : null}
-                            {(this.state.showStatus && this.state.swapStatus.includes("lock")) ? (
+                            {(this.state.showStatus && this.state.swapStatus.includes("locking")) ? (
                                 <Paper variant="outlined" sx={{backgroundColor: '#f8f4fc', m:1, py:1, mb:2, display: 'flex', }} fullWidth>
                                     <Typography variant="caption" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center', display: 'flex', alignItems: 'center', marginBottom: 0, wordWrap: "break-word",  }} color={this.state.statusColor}>
                                     * Please wait, this could take approx. 10 minutes.
