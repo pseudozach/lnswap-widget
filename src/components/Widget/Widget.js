@@ -425,8 +425,15 @@ class Widget extends React.Component {
                                         <CheckCircleIcon color="success" fontSize="large" sx={{m:1, fontSize: 36}} />
                                     ) : null}
                                     <Typography variant="body1" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center', display: 'flex', alignItems: 'center', marginBottom: 0, }} color={this.state.statusColor}>
-                                    {this.state.swapStatus}
+                                        {this.state.swapStatus}
                                     </Typography>
+                                </Paper>
+                            ) : null}
+                            {(this.state.showStatus && this.state.swapStatus.includes("lock")) ? (
+                                <Paper variant="outlined" sx={{backgroundColor: '#f8f4fc', m:1, py:1, mb:2, display: 'flex', }} fullWidth>
+                                    <Typography variant="caption" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center', display: 'flex', alignItems: 'center', marginBottom: 0, wordWrap: "break-word",  }} color={this.state.statusColor}>
+                                    * Please wait, this could take approx. 10 minutes.
+                                </Typography>
                                 </Paper>
                             ) : null}
                             {this.state.txId ? (
