@@ -7,6 +7,7 @@ import './Widget.css';
 import { crypto } from 'bitcoinjs-lib';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
@@ -25,6 +26,7 @@ import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { OpenInNew } from '@mui/icons-material';
 import InfoIcon from '@mui/icons-material/Info';
+import CloseIcon from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import lightningPayReq from 'bolt11';
 
@@ -219,22 +221,34 @@ class Widget extends React.Component {
         if (this.state.modalIsOpen) {
             return (                
                 <Modal
-                open={this.state.modalIsOpen}
-                onClose={this.handleClose}
-                aria-labelledby="modal-modal-title"
-                aria-describedby="modal-modal-description"
-                style={centeredView}
+                    open={this.state.modalIsOpen}
+                    onClose={this.handleClose}
+                    aria-labelledby="modal-modal-title"
+                    aria-describedby="modal-modal-description"
+                    style={centeredView}
+                    disableEscapeKeyDown={true}
                 >
                     <Box sx={style}>
                         {/* <View sx={{backgroundColor: 'black', height: 20}}>
 
                         </View> */}
-                        <Paper elevation={0} sx={{backgroundColor: '#f8f4fc', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottomLeftRadius: 0, borderBottomRightRadius: 0,}}>
+                        <Paper elevation={0} sx={{backgroundColor: '#f8f4fc', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottomLeftRadius: 0, borderBottomRightRadius: 0, position: 'relative',}}>
                             <img src="https://widget.lnswap.org/assets/btc.svg" height='32' style={{marginRight:24, position: 'absolute', zIndex: 21,}}/>
                             <img src="https://widget.lnswap.org/assets/stx.svg" height='32' style={{marginLeft:24}}/>
+                            <IconButton
+                                aria-label="close"
+                                onClick={this.handleClose}
+                                sx={{
+                                    position: 'absolute',
+                                    right: 8,
+                                    color: (theme) => theme.palette.grey[500],
+                                }}
+                                >
+                                <CloseIcon fontSize="small"/>
+                            </IconButton>
                         </Paper>
                         <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center', mt: 2 }}>
-                        {this.state.headerText}
+                            {this.state.headerText}
                         </Typography>
                         <Typography id="modal-modal-description" variant="body1" sx={{ mb: 2, mx: 2, fontWeight: 100, textAlign: 'center', }}>
                         Confirm details and pay the LN invoice to start the swap.
@@ -554,8 +568,10 @@ class Widget extends React.Component {
     handleClick = () => {
         this.setState({buttonLoading: true,});
     }
-    handleClose = () => {
-        // console.log(`closeModal `, this.state);
+    handleClose = (event, reason) => {
+        // console.log(`handleClose `, event, reason);
+        if (reason && reason == "backdropClick") 
+        return;
         this.setState({modalIsOpen: false});
     }
     resetState = () => {
