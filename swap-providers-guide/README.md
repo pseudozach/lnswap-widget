@@ -11,7 +11,7 @@ description: >-
 First decision you need to make is to identify a host for your app. Due to LN-STX Bridge's architecture, currently the app needs to be run on a publicly reachable server with a domain name.
 
 {% hint style="info" %}
-You can run your instance exclusively on [tor](https://www.torproject.org), this way you would not need to purchase, configure domain name.
+You can run your instance exclusively on [tor](https://www.torproject.org), this way you would not need to purchase and configure a domain name.
 
 Downside is, your users would need to reach your instance over tor network.
 {% endhint %}

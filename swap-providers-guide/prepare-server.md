@@ -10,7 +10,7 @@ Note that there are always many ways to accomplish tasks and each sysadmin can h
 
 ### Security
 
-One of the most important things when running a live production system with funds on it is to keep it secure. By following basic principles you can ensure you're protected from most hack attempts and at least make it difficult for bad actors to infiltrate your systems.
+One of the most important things when running a live production system with funds on it is to keep it secure. By following common principles and best practices you can ensure you're protected from most hack attempts and at least make it difficult for bad actors to infiltrate your systems.
 
 <details>
 
@@ -33,6 +33,8 @@ Disable password based login on the server and restart sshd
 ```
 vim /etc/ssh/sshd_config
 PasswordAuthentication no
+
+// once configuration is updated restart sshd
 systemctl restart sshd
 ```
 
@@ -42,7 +44,7 @@ systemctl restart sshd
 
 <summary>Install fail2ban</summary>
 
-Fail2ban is a convenient access control daemon that can blacklist bad actors that attack your system by brute forcing logins.
+Fail2ban is a convenient access control daemon that can add bad actors that attack your system by brute forcing logins to a block list.
 
 ```
 sudo apt-get install fail2ban
