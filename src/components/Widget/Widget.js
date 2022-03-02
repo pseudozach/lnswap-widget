@@ -602,6 +602,9 @@ class Widget extends React.Component {
         // this.createswap();
     }
     setMessage = (...message) => {
+        if(!message[0] || !message[1] || !message[2]) {
+            throw Error(`Missing required swap parameter(s)!`);
+        }
         console.log(`swapParams: `, message)
         let headerText;
         if(message[0] === 'reversesubmarine' || message[0] === 'triggertransferswap') {
