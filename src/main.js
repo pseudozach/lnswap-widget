@@ -13,7 +13,7 @@ const defaultconfig = {
 let widgetComponent = null;
 
 function app(window) {
-    console.log(`${widgetName} starting`);
+    // console.log(`${widgetName} starting`);
     // If we don't already have a name for widget's global object
     // assigned by the host, then they must be using the simple <script> tag method
     // so we need to get our data out of that tag
