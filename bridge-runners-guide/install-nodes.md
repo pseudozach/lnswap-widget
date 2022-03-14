@@ -2,15 +2,14 @@
 
 ## Node Setup
 
-LN-STX Bridge Client requires 2 nodes to function.&#x20;
+LN-STX Bridge requires 3 nodes to function.&#x20;
 
 * Bitcoin full node, unpruned and with tx-index enabled.
 * LND lightning node
+* Stacks blockchain node
 
 {% hint style="info" %}
-Note that there are other methods to run Bitcoin and Lightning nodes including containerized versions. As long as the below configuration requirements are met and lnstxbridge-client can access the nodes, any installation method should be fine.
-
-When in doubt, reach out to us on LNSwap Discord [#providers](https://discord.gg/zU2wwPjSXe) channel.
+In the future it could be possible to run the bridge with a pruned node or by utilizing an external Stacks Node API but currently the most stable method is hosting all required nodes on the same server.
 {% endhint %}
 
 ### Bitcoin
@@ -71,3 +70,33 @@ Remember to track logs and node status throughout the activity.
 
 For instance you need to manually create or import a seed for LND. You can do so with `lncli create` or `lncli unlock` commands.
 {% endhint %}
+
+### Stacks
+
+A full stacks node with websocket access is required for the bridge to function. In the future there may be other providers so this requirement is removed but as of now, stacks node is needed.
+
+There's a quite straightforward way to jump-start it as detailed in this [repository](https://github.com/stacks-network/stacks-blockchain-docker).
+
+```
+// install docker-compose
+VERSION=$(curl --silent https://api.github.com/repos/docker/compose/releases/latest | jq .name -r)
+DESTINATION=/usr/local/bin/docker-compose
+sudo curl -L https://github.com/docker/compose/releases/download/${VERSION}/docker-compose-$(uname -s)-$(uname -m) -o $DESTINATION
+sudo chmod 755 $DESTINATION
+
+// clone stacks-blockchain container
+git clone https://github.com/stacks-network/stacks-blockchain-docker && cd ./stacks-blockchain-docker
+
+cp sample.env .env
+
+./manage.sh mainnet pull
+./manage.sh mainnet up
+```
+
+Once all nodes are started, it can take some hours until Bitcoin node synchronizes and reaches the chain tip. Stacks node can take multiple days. Be patient and regularly check with the below commands until all nodes are synchronized.
+
+```
+bitcoin-cli getblockchaininfo
+
+curl -sL localhost:3999/v2/info | jq .
+```
