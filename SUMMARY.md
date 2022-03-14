@@ -7,7 +7,7 @@
   * [2⃣ Install Nodes](swap-providers-guide/install-nodes.md)
   * [3⃣ Deploy Client](swap-providers-guide/deploy-client.md)
   * [4⃣ Deploy Dashboard](swap-providers-guide/deploy-dashboard.md)
-* [📘 Bridge Runner's Guide](bridge-runners-guide/README.md)
+* [⌨ Bridge Runner's Guide](bridge-runners-guide/README.md)
   * [1⃣ Prepare Server](bridge-runners-guide/prepare-server.md)
   * [2⃣ Install Nodes](bridge-runners-guide/install-nodes.md)
   * [3⃣ Deploy Backend](bridge-runners-guide/deploy-backend.md)
