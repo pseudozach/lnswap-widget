@@ -1168,7 +1168,7 @@ class Widget extends React.Component {
             "tx": rawTx,
         }
         console.log(`creating broadcastsponsoredtx with: `, reqbody);
-        fetch(`${apiUrl}/broadcastsponsoredtx`, {
+        fetch(`${apiUrl}/zbroadcastsponsoredtx`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
