@@ -659,9 +659,9 @@ class Widget extends React.Component {
                         this.createSwap();
                         break;
 
-                    case 'mintnft':
-                        this.createDirectSwap();
-                        break;
+                    // case 'mintnft':
+                    //     this.createDirectSwap();
+                    //     break;
 
                     case 'triggerswap':
                     case 'triggertransferswap':
@@ -773,43 +773,43 @@ class Widget extends React.Component {
                 this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.', statusColor: 'error', showQr: false});
             });  
     }
-    createDirectSwap = () => {
-        this.resetState();
-        var reqbody = {
-            "nftAddress": this.state.contractAddress,
-            "userAddress": this.state.claimAddress,
-            "contractSignature": this.state.contractSignature,
-            "stxAmount": this.state.stxAmount,
-        }
-        console.log(`creating directSwap with: `, reqbody);
-        fetch(`${apiUrl}/mintnft`, {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(reqbody)
-            }).then(res => res.json())
-            .then(res => {
-                console.log("directSwap created: ", res);
-                if(res.error) {
-                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. '+res.error, statusColor: 'error', showQr: false});
-                    return;
-                }
-                // {
-                //     "id": "KQpyZd",
-                //     "invoice": "lnbcrt282720n1psa2kpepp5c9zkx7zshn2tlvw3udl6fjzpeh6mxmrkyg8wduky5ul8jk42729qdqqcqzpgsp5jpn35ew7r99e6e38ak3d2yysq0554cc853g4hv4jnlaad6mhrsvs9qyyssqpa5w4qapwas9lchzxcrutza6jwgn22mw8uj0x9sy2r7hgc9xc7prx6pyv5drejg5smcs9gvjvgesnphszymlyexnwzlns3lpkujjg4spnqgggg"
-                // }
-                var decoded = lightningPayReq.decode(res.invoice);
-                // console.log('decoded ', decoded);
-                const invoiceAmountBTC = (decoded.millisatoshis / 10**11).toFixed(8).toString()
-                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, showQr: true});
-                this.listenswap();
-            }).catch(e => {
-                console.log(`createswap error: `, e);
-                this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.', statusColor: 'error', showQr: false});
-            });  
-    }
+    // createDirectSwap = () => {
+    //     this.resetState();
+    //     var reqbody = {
+    //         "nftAddress": this.state.contractAddress,
+    //         "userAddress": this.state.claimAddress,
+    //         "contractSignature": this.state.contractSignature,
+    //         "stxAmount": this.state.stxAmount,
+    //     }
+    //     console.log(`creating directSwap with: `, reqbody);
+    //     fetch(`${apiUrl}/mintnft`, {
+    //         method: 'post',
+    //         headers: {
+    //             'Accept': 'application/json, text/plain, */*',
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(reqbody)
+    //         }).then(res => res.json())
+    //         .then(res => {
+    //             console.log("directSwap created: ", res);
+    //             if(res.error) {
+    //                 this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. '+res.error, statusColor: 'error', showQr: false});
+    //                 return;
+    //             }
+    //             // {
+    //             //     "id": "KQpyZd",
+    //             //     "invoice": "lnbcrt282720n1psa2kpepp5c9zkx7zshn2tlvw3udl6fjzpeh6mxmrkyg8wduky5ul8jk42729qdqqcqzpgsp5jpn35ew7r99e6e38ak3d2yysq0554cc853g4hv4jnlaad6mhrsvs9qyyssqpa5w4qapwas9lchzxcrutza6jwgn22mw8uj0x9sy2r7hgc9xc7prx6pyv5drejg5smcs9gvjvgesnphszymlyexnwzlns3lpkujjg4spnqgggg"
+    //             // }
+    //             var decoded = lightningPayReq.decode(res.invoice);
+    //             // console.log('decoded ', decoded);
+    //             const invoiceAmountBTC = (decoded.millisatoshis / 10**11).toFixed(8).toString()
+    //             this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, showQr: true});
+    //             this.listenswap();
+    //         }).catch(e => {
+    //             console.log(`createswap error: `, e);
+    //             this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.', statusColor: 'error', showQr: false});
+    //         });  
+    // }
     listenswap = () => {
         var thisthing = this;
         // console.log("listenswap state: ", this.state);
