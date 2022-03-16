@@ -830,7 +830,7 @@ class Widget extends React.Component {
                     break;
 
                 case "transaction.mempool":
-                    thisthing.setState({showLoading: true, showStatus: true, swapStatus: 'LNSwap.org is locking funds into the swap contract.', statusColor: 'warn', showButton: false, showQr: false});
+                    thisthing.setState({showLoading: true, showStatus: true, swapStatus: 'LNSwap.org is locking funds into the swap contract.', txId: data.transaction.id, statusColor: 'warn', showButton: false, showQr: false});
                     break;
                     
                 case "transaction.confirmed":
@@ -1188,7 +1188,7 @@ class Widget extends React.Component {
                     this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. ', statusColor: 'error', showQr: false});
                     return;
                 }
-                this.setState({txId: res.transactionId, });
+                this.setState({txId: res.transactionId.transactionId, });
                 // this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, showQr: true});
                 // this.listenswap();
             }).catch(e => {

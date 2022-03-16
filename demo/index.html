@@ -163,8 +163,8 @@
         //     lnswap('swap', 'mintnft', stxaddress, stxamount, contractAddress, contractSignature);
         // }
         function startTriggerSwap(){
-            const stxaddress = document.getElementsByClassName('stxaddress')[2].value;
-            const stxamount = document.getElementsByClassName('stxamount')[2].value;
+            const stxaddress = document.getElementsByClassName('stxaddress')[1].value;
+            const stxamount = document.getElementsByClassName('stxamount')[1].value;
             const contractAddress = document.getElementById('nccontractAddress').value;
             const contractSignature = document.getElementById('nccontractSignature').value;
             const sponsoredTx = document.getElementById('sponsoredTx').value;
@@ -176,8 +176,8 @@
             lnswap('swap', 'triggerswap', stxaddress, stxamount, contractAddress, contractSignature, sponsoredTx);
         }
         function startTriggerTransferSwap(){
-            const stxaddress = document.getElementsByClassName('stxaddress')[3].value;
-            const stxamount = document.getElementsByClassName('stxamount')[3].value;
+            const stxaddress = document.getElementsByClassName('stxaddress')[2].value;
+            const stxamount = document.getElementsByClassName('stxamount')[2].value;
             const receiveraddress= document.getElementById('receiveraddress').value;
             const stxmemo = document.getElementById('stxmemo').value;
             const sponsoredTx = document.getElementById('sttssponsoredTx').value;
@@ -189,7 +189,7 @@
             lnswap('swap', 'triggertransferswap', stxaddress, stxamount, '', '', sponsoredTx, receiveraddress, stxmemo);
         }
         function startTriggerSwapDemo(){
-            const stxaddress = document.getElementsByClassName('stxaddress')[4].value;
+            const stxaddress = document.getElementsByClassName('stxaddress')[3].value;
             const stxamount = 5;
             const contractAddress = 'SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX.cube';
             const contractSignature = 'claim';
