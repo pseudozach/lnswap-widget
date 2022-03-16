@@ -7,6 +7,7 @@ import './Widget.css';
 import { crypto } from 'bitcoinjs-lib';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import TextField from '@mui/material/TextField';
@@ -25,6 +26,7 @@ import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { OpenInNew } from '@mui/icons-material';
 import InfoIcon from '@mui/icons-material/Info';
+import CloseIcon from '@mui/icons-material/Close';
 import Paper from '@mui/material/Paper';
 import lightningPayReq from 'bolt11';
 
@@ -207,7 +209,7 @@ class Widget extends React.Component {
             stxAmountLarge: 0,
             headerText: 'Preparing Swap...',
             txId: '',
-            triggerContractName: 'triggerswap-v3',
+            triggerContractName: Config.triggerContractName,
             sponsoredTx: false,
             minerFeeInvoice: '',
             minerPaymentLink: '',
@@ -220,46 +222,32 @@ class Widget extends React.Component {
     render() {
         if (this.state.modalIsOpen) {
             return (
-                // <div className="widget-container">
-                //     <h1>I'm a {widgetName}</h1>
-                //     <div>I have a message: {this.state.message}</div>
-                // </div>
-
-                // <Modal
-                //     isOpen={this.state.modalIsOpen}
-                //     // onAfterOpen={afterOpenModal}
-                //     onRequestClose={this.closeModal}
-                //     style={customStyles}
-                //     ariaHideApp={false}
-                //     contentLabel="Example Modal"
-                // >
-                //     {/* ref={(_subtitle) => (subtitle = _subtitle)} */}
-                //     <h2>Hello</h2>
-                //     <button onClick={this.closeModal}>close</button>
-                //     <div>I am a modal</div>
-                //     <form>
-                //         <input />
-                //         <button>tab navigation</button>
-                //         <button>stays</button>
-                //         <button>inside</button>
-                //         <button>the modal</button>
-                //     </form>
-                // </Modal>
-                
                 <Modal
                 open={this.state.modalIsOpen}
                 onClose={this.handleClose}
                 aria-labelledby="modal-modal-title"
                 aria-describedby="modal-modal-description"
                 style={centeredView}
+                disableEscapeKeyDown={true}
                 >
                     <Box sx={style}>
                         {/* <View sx={{backgroundColor: 'black', height: 20}}>
 
                         </View> */}
-                        <Paper elevation={0} sx={{backgroundColor: '#f8f4fc', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottomLeftRadius: 0, borderBottomRightRadius: 0,}}>
+                        <Paper elevation={0} sx={{backgroundColor: '#f8f4fc', height: 64, display: 'flex', alignItems: 'center', justifyContent: 'center', borderBottomLeftRadius: 0, borderBottomRightRadius: 0, position: 'relative',}}>
                             <img src="https://widget.lnswap.org/assets/btc.svg" height='32' style={{marginRight:24, position: 'absolute', zIndex: 21,}}/>
                             <img src="https://widget.lnswap.org/assets/stx.svg" height='32' style={{marginLeft:24}}/>
+                            <IconButton
+                                aria-label="close"
+                                onClick={this.handleClose}
+                                sx={{
+                                    position: 'absolute',
+                                    right: 8,
+                                    color: (theme) => theme.palette.grey[500],
+                                }}
+                                >
+                                <CloseIcon fontSize="small"/>
+                            </IconButton>
                         </Paper>
                         <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center', mt: 2 }}>
                         {this.state.headerText}
@@ -443,6 +431,13 @@ class Widget extends React.Component {
                                     </Typography>
                                 </Paper>
                             ) : null}
+                            {(this.state.showStatus && this.state.swapStatus.includes("locking")) ? (
+                                <Paper variant="outlined" sx={{backgroundColor: '#f8f4fc', m:1, py:1, mb:2, display: 'flex', }} fullWidth>
+                                    <Typography variant="caption" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center', display: 'flex', alignItems: 'center', marginBottom: 0, wordWrap: "break-word",  }} color={this.state.statusColor}>
+                                    * Please wait, this could take approx. 10 minutes.
+                                </Typography>
+                                </Paper>
+                            ) : null}
                             {this.state.txId ? (
                                     <Button variant="outlined" color="secondary" sx={{mt:1}} endIcon={<OpenInNew style={{color: 'black'}}/>} href={`https://explorer.stacks.co/txid/${this.state.txId}?chain=mainnet`} target="_blank">
                                       View on Stacks Explorer
@@ -582,8 +577,10 @@ class Widget extends React.Component {
     handleClick = () => {
         this.setState({buttonLoading: true,});
     }
-    handleClose = () => {
-        // console.log(`closeModal `, this.state);
+    handleClose = (event, reason) => {
+        // console.log(`handleClose `, event, reason);
+        if (reason && reason == "backdropClick") 
+        return;
         this.setState({modalIsOpen: false});
     }
     resetState = () => {
@@ -607,6 +604,9 @@ class Widget extends React.Component {
         // this.createswap();
     }
     setMessage = (...message) => {
+        if(!message[0] || !message[1] || !message[2]) {
+            throw Error(`Missing required swap parameter(s)!`);
+        }
         console.log(`swapParams: `, message)
         let headerText;
         if(message[0] === 'reversesubmarine' || message[0] === 'triggertransferswap') {
@@ -624,6 +624,7 @@ class Widget extends React.Component {
             contractSignature: message[4], 
             sponsoredTx: message[5] === "true" || message[5] === true, 
             receiverAddress: message[6] || "",
+            stxMemo: message[7] || "",
             headerText,
             modalIsOpen: true
         });
@@ -1132,6 +1133,7 @@ class Widget extends React.Component {
           bufferCV(Buffer.from(paddedtimelock,'hex')),
         //   contractPrincipalCV(nftAddress, nftName),
           standardPrincipalCV(this.state.receiverAddress),
+          stringAsciiCV(this.state.stxMemo),
         ];
         const txOptions = {
           contractAddress: contractAddress,

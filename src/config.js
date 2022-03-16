@@ -6,7 +6,8 @@ function getConfig() {
         // apiUrl: "http://localhost:9002",
         mocknetUrl: "http://localhost:3999",
         // mocknetUrl: "https://3999-pseudozach-lnstxbridge-6ldqjy5d9y8.ws-us27.gitpod.io",
-        pairId: "BTC/STX"
+        pairId: "BTC/STX",
+        triggerContractName: 'triggerswap-v4',
     }
 }
 
