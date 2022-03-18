@@ -12,7 +12,6 @@
   * [2⃣ Install Nodes](bridge-runners-guide/install-nodes.md)
   * [3⃣ Deploy Backend](bridge-runners-guide/deploy-backend.md)
   * [4⃣ Deploy Frontend](bridge-runners-guide/deploy-frontend.md)
-* [Links](links.md)
 
 ## Links
 
