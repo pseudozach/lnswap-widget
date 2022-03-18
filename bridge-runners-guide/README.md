@@ -4,7 +4,7 @@ description: >-
   trustless bridge.
 ---
 
-# 📘 Bridge Runner's Guide
+# ⌨ Bridge Runner's Guide
 
 {% hint style="warning" %}
 This guide is for running a completely independent LN-STX Bridge with a Stacks Node publicly reachable on the internet.
