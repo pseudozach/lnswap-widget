@@ -217,6 +217,7 @@ class Widget extends React.Component {
             minerFeePaid: false,
             // explorerLink: '',
             receiverAddress: '',
+            presigned: false,
         };
     }
 
@@ -432,10 +433,10 @@ class Widget extends React.Component {
                                     </Typography>
                                 </Paper>
                             ) : null}
-                            {(this.state.showStatus && this.state.swapStatus.includes("locking")) ? (
+                            {(this.state.showStatus && (this.state.swapStatus.includes("locking") || this.state.swapStatus.includes("Claiming") || this.state.swapStatus.includes("pre-signed"))) ? (
                                 <Paper variant="outlined" sx={{backgroundColor: '#f8f4fc', m:1, py:1, mb:2, display: 'flex', }} fullWidth>
                                     <Typography variant="caption" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center', display: 'flex', alignItems: 'center', marginBottom: 0, wordWrap: "break-word",  }} color={this.state.statusColor}>
-                                    * Please wait, this could take approx. 10 minutes.
+                                    {this.state.swapStatus.includes("locking") ? '* Please wait, this could take approx. 10 minutes.' : '* You can safely close this window.'}
                                 </Typography>
                                 </Paper>
                             ) : null}
@@ -831,11 +832,21 @@ class Widget extends React.Component {
                     break;
 
                 case "transaction.mempool":
+                    console.log('tx.mempool ', thisthing.state, )
+                    if(thisthing.state.swapType === 'triggerswap' && !thisthing.state.presigned) {
+                        // nft purchase with pre-signed tx
+                        thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Pre-sign the NFT claim transaction.', statusColor: 'info', showButton: true, showQr: false, buttonText: 'Sign'});
+                        break;
+                    }
                     thisthing.setState({showLoading: true, showStatus: true, swapStatus: 'LNSwap.org is locking funds into the swap contract.', txId: data.transaction.id, statusColor: 'warn', showButton: false, showQr: false});
                     break;
                     
                 case "transaction.confirmed":
-                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Funds are locked. Ready to claim.', statusColor: 'success', showButton: true, showQr: false});
+                    let statusText = 'Funds are locked. Ready to claim.';
+                    if(thisthing.state.swapType === 'triggerswap' && thisthing.state.presigned) {
+                        statusText = 'Funds are locked. Claiming.'
+                    }
+                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: statusText, txId: data.transaction.id, statusColor: 'success', showButton: true, showQr: false});
                     break;
 
                 case "transaction.claimed":
@@ -1185,27 +1196,26 @@ class Widget extends React.Component {
             .then(res => {
                 console.log("broadcastsponsoredtx response: ", res);
                 if(res.error) {
-                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. '+res.error, statusColor: 'error', showQr: false});
+                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. '+res.error, statusColor: 'error', showQr: false, showButton: false,});
                     return;
                 }
                 if(JSON.stringify(res).includes('error')) {
-                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. ', statusColor: 'error', showQr: false});
+                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. ', statusColor: 'error', showQr: false, showButton: false,});
                     return;
                 }
-                this.setState({txId: res.transactionId.transactionId, });
+                if(res.transactionId && res.transactionId.transactionId && res.transactionId.transactionId === 'txsaved') {
+                    this.setState({showStatus: true, swapStatus: 'Transaction saved, locking funds.', statusColor: 'warn', showQr: false, presigned: true,});
+                }
+                if(res.transactionId && res.transactionId.transactionId && res.transactionId.transactionId !== 'txsaved') {
+                    this.setState({txId: res.transactionId.transactionId, });
+                }
                 // this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, showQr: true});
                 // this.listenswap();
             }).catch(e => {
                 console.log(`broadcastSponsoredTx error: `, e);
-                this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. Please try again later.', statusColor: 'error', showQr: false});
+                this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. Please try again later.', statusColor: 'error', showQr: false, showButton: false,});
             });  
     }
-
-    // removed from package.json - readded
-    // "@stacks/connect": "^6.2.0",
-    // "@stacks/network": "^2.0.1",
-    // "@stacks/transactions": "^2.0.1",
-
 };
 
 export default Widget;
