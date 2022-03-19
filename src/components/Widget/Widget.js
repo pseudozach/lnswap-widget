@@ -34,6 +34,7 @@ import { StacksTestnet, StacksMocknet, StacksMainnet } from '@stacks/network';
 import { AppConfig, UserSession, showConnect, openContractCall } from '@stacks/connect';
 import {
   bufferCV,
+  uintCV,
   contractPrincipalCV,
   standardPrincipalCV,
   // makeStandardSTXPostCondition,
@@ -834,7 +835,7 @@ class Widget extends React.Component {
                     break;
                     
                 case "transaction.confirmed":
-                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Funds are locked in the swap contract. Ready to claim.', statusColor: 'success', showButton: true, showQr: false});
+                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Funds are locked. Ready to claim.', statusColor: 'success', showButton: true, showQr: false});
                     break;
 
                 case "transaction.claimed":
@@ -909,10 +910,11 @@ class Widget extends React.Component {
         // (claimStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)))
         const functionArgs = [
           bufferCV(Buffer.from(preimage,'hex')),
-          bufferCV(Buffer.from(paddedamount,'hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from(paddedtimelock,'hex')),
+          uintCV(smallamount)
+        //   bufferCV(Buffer.from(paddedamount,'hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from(paddedtimelock,'hex')),
         ];
         const txOptions = {
           contractAddress: contractAddress,
@@ -1014,10 +1016,11 @@ class Widget extends React.Component {
         // (triggerStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)) (nftPrincipal <claim-for-trait>) (userPrincipal principal)
         const functionArgs = [
           bufferCV(Buffer.from(preimage,'hex')),
-          bufferCV(Buffer.from(paddedamount,'hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from(paddedtimelock,'hex')),
+          uintCV(smallamount),
+        //   bufferCV(Buffer.from(paddedamount,'hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from(paddedtimelock,'hex')),
           contractPrincipalCV(nftAddress, nftName),
         //   standardPrincipalCV(this.state.claimAddress), // removed on triggerswap-v2
         ];
@@ -1127,10 +1130,11 @@ class Widget extends React.Component {
         // (triggerStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)) (nftPrincipal <claim-for-trait>) (userPrincipal principal)
         const functionArgs = [
           bufferCV(Buffer.from(preimage,'hex')),
-          bufferCV(Buffer.from(paddedamount,'hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from(paddedtimelock,'hex')),
+          uintCV(smallamount),
+        //   bufferCV(Buffer.from(paddedamount,'hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from(paddedtimelock,'hex')),
         //   contractPrincipalCV(nftAddress, nftName),
           standardPrincipalCV(this.state.receiverAddress),
           stringAsciiCV(this.state.stxMemo),
