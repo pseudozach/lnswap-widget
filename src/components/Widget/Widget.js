@@ -844,7 +844,7 @@ class Widget extends React.Component {
                 case "transaction.confirmed":
                     let statusText = 'Funds are locked. Ready to claim.';
                     if(thisthing.state.swapType === 'triggerswap' && thisthing.state.presigned) {
-                        statusText = 'Funds are locked. Claiming.'
+                        statusText = 'Funds are locked. Claiming NFT.'
                     }
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: statusText, txId: data.transaction.id, statusColor: 'success', showButton: true, showQr: false});
                     break;
@@ -1204,7 +1204,7 @@ class Widget extends React.Component {
                     return;
                 }
                 if(res.transactionId && res.transactionId.transactionId && res.transactionId.transactionId === 'txsaved') {
-                    this.setState({showStatus: true, swapStatus: 'Transaction saved, locking funds.', statusColor: 'warn', showQr: false, presigned: true,});
+                    this.setState({showStatus: true, swapStatus: 'Transaction saved. Locking funds.', statusColor: 'warn', showQr: false, presigned: true,});
                 }
                 if(res.transactionId && res.transactionId.transactionId && res.transactionId.transactionId !== 'txsaved') {
                     this.setState({txId: res.transactionId.transactionId, });
