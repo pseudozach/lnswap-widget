@@ -34,6 +34,7 @@ import { StacksTestnet, StacksMocknet, StacksMainnet } from '@stacks/network';
 import { AppConfig, UserSession, showConnect, openContractCall } from '@stacks/connect';
 import {
   bufferCV,
+  uintCV,
   contractPrincipalCV,
   standardPrincipalCV,
   // makeStandardSTXPostCondition,
@@ -76,6 +77,8 @@ if(Config.apiUrl.includes("lnswap")){
     // console.log('network is mocknet ', mocknet, Config.mocknetUrl)
   activeNetwork = mocknet
 }
+// console.log('activeNetwork ', Config.mocknetUrl, activeNetwork);
+
 //  else {
 //     console.log('network is testnet')
 //   activeNetwork = testnet
@@ -214,19 +217,20 @@ class Widget extends React.Component {
             minerFeePaid: false,
             // explorerLink: '',
             receiverAddress: '',
+            presigned: false,
         };
     }
 
     render() {
         if (this.state.modalIsOpen) {
-            return (                
+            return (
                 <Modal
-                    open={this.state.modalIsOpen}
-                    onClose={this.handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                    style={centeredView}
-                    disableEscapeKeyDown={true}
+                open={this.state.modalIsOpen}
+                onClose={this.handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+                style={centeredView}
+                disableEscapeKeyDown={true}
                 >
                     <Box sx={style}>
                         {/* <View sx={{backgroundColor: 'black', height: 20}}>
@@ -429,10 +433,10 @@ class Widget extends React.Component {
                                     </Typography>
                                 </Paper>
                             ) : null}
-                            {(this.state.showStatus && this.state.swapStatus.includes("locking")) ? (
+                            {(this.state.showStatus && (this.state.swapStatus.includes("locking") || this.state.swapStatus.includes("Claiming") || this.state.swapStatus.includes("pre-signed"))) ? (
                                 <Paper variant="outlined" sx={{backgroundColor: '#f8f4fc', m:1, py:1, mb:2, display: 'flex', }} fullWidth>
                                     <Typography variant="caption" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center', display: 'flex', alignItems: 'center', marginBottom: 0, wordWrap: "break-word",  }} color={this.state.statusColor}>
-                                    * Please wait, this could take approx. 10 minutes.
+                                    {this.state.swapStatus.includes("locking") ? '* Please wait, this could take approx. 10 minutes.' : '* You can safely close this window.'}
                                 </Typography>
                                 </Paper>
                             ) : null}
@@ -582,7 +586,7 @@ class Widget extends React.Component {
         this.setState({modalIsOpen: false});
     }
     resetState = () => {
-        this.setState({txId:'', swapStatus: '', showComplete: false, buttonLoading: false, minerFeePaid: false,}); 
+        this.setState({txId:'', swapStatus: '', showComplete: false, buttonLoading: false, minerFeePaid: false, showButton: false,}); 
     }
     createSecret = () => {
         // generate one-time-use preimage/preimageHash
@@ -658,9 +662,9 @@ class Widget extends React.Component {
                         this.createSwap();
                         break;
 
-                    case 'mintnft':
-                        this.createDirectSwap();
-                        break;
+                    // case 'mintnft':
+                    //     this.createDirectSwap();
+                    //     break;
 
                     case 'triggerswap':
                     case 'triggertransferswap':
@@ -699,7 +703,7 @@ class Widget extends React.Component {
             "preimageHash": this.state.preimageHash
         }
         console.log(`creating swap with: `, reqbody);
-        fetch(`${apiUrl}/createswap`, {
+        fetch(`${apiUrl}/zcreateswap`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -743,7 +747,7 @@ class Widget extends React.Component {
             "prepayMinerFee": this.state.sponsoredTx,
         }
         console.log(`creating triggerswap with: `, reqbody);
-        fetch(`${apiUrl}/createswap`, {
+        fetch(`${apiUrl}/zcreateswap`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -772,43 +776,43 @@ class Widget extends React.Component {
                 this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.', statusColor: 'error', showQr: false});
             });  
     }
-    createDirectSwap = () => {
-        this.resetState();
-        var reqbody = {
-            "nftAddress": this.state.contractAddress,
-            "userAddress": this.state.claimAddress,
-            "contractSignature": this.state.contractSignature,
-            "stxAmount": this.state.stxAmount,
-        }
-        console.log(`creating directSwap with: `, reqbody);
-        fetch(`${apiUrl}/mintnft`, {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json, text/plain, */*',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(reqbody)
-            }).then(res => res.json())
-            .then(res => {
-                console.log("directSwap created: ", res);
-                if(res.error) {
-                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. '+res.error, statusColor: 'error', showQr: false});
-                    return;
-                }
-                // {
-                //     "id": "KQpyZd",
-                //     "invoice": "lnbcrt282720n1psa2kpepp5c9zkx7zshn2tlvw3udl6fjzpeh6mxmrkyg8wduky5ul8jk42729qdqqcqzpgsp5jpn35ew7r99e6e38ak3d2yysq0554cc853g4hv4jnlaad6mhrsvs9qyyssqpa5w4qapwas9lchzxcrutza6jwgn22mw8uj0x9sy2r7hgc9xc7prx6pyv5drejg5smcs9gvjvgesnphszymlyexnwzlns3lpkujjg4spnqgggg"
-                // }
-                var decoded = lightningPayReq.decode(res.invoice);
-                // console.log('decoded ', decoded);
-                const invoiceAmountBTC = (decoded.millisatoshis / 10**11).toFixed(8).toString()
-                this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, showQr: true});
-                this.listenswap();
-            }).catch(e => {
-                console.log(`createswap error: `, e);
-                this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.', statusColor: 'error', showQr: false});
-            });  
-    }
+    // createDirectSwap = () => {
+    //     this.resetState();
+    //     var reqbody = {
+    //         "nftAddress": this.state.contractAddress,
+    //         "userAddress": this.state.claimAddress,
+    //         "contractSignature": this.state.contractSignature,
+    //         "stxAmount": this.state.stxAmount,
+    //     }
+    //     console.log(`creating directSwap with: `, reqbody);
+    //     fetch(`${apiUrl}/mintnft`, {
+    //         method: 'post',
+    //         headers: {
+    //             'Accept': 'application/json, text/plain, */*',
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify(reqbody)
+    //         }).then(res => res.json())
+    //         .then(res => {
+    //             console.log("directSwap created: ", res);
+    //             if(res.error) {
+    //                 this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. '+res.error, statusColor: 'error', showQr: false});
+    //                 return;
+    //             }
+    //             // {
+    //             //     "id": "KQpyZd",
+    //             //     "invoice": "lnbcrt282720n1psa2kpepp5c9zkx7zshn2tlvw3udl6fjzpeh6mxmrkyg8wduky5ul8jk42729qdqqcqzpgsp5jpn35ew7r99e6e38ak3d2yysq0554cc853g4hv4jnlaad6mhrsvs9qyyssqpa5w4qapwas9lchzxcrutza6jwgn22mw8uj0x9sy2r7hgc9xc7prx6pyv5drejg5smcs9gvjvgesnphszymlyexnwzlns3lpkujjg4spnqgggg"
+    //             // }
+    //             var decoded = lightningPayReq.decode(res.invoice);
+    //             // console.log('decoded ', decoded);
+    //             const invoiceAmountBTC = (decoded.millisatoshis / 10**11).toFixed(8).toString()
+    //             this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, showQr: true});
+    //             this.listenswap();
+    //         }).catch(e => {
+    //             console.log(`createswap error: `, e);
+    //             this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.', statusColor: 'error', showQr: false});
+    //         });  
+    // }
     listenswap = () => {
         var thisthing = this;
         // console.log("listenswap state: ", this.state);
@@ -828,11 +832,21 @@ class Widget extends React.Component {
                     break;
 
                 case "transaction.mempool":
-                    thisthing.setState({showLoading: true, showStatus: true, swapStatus: 'LNSwap.org is locking funds into the swap contract.', statusColor: 'warn', showButton: false, showQr: false});
+                    console.log('tx.mempool ', thisthing.state, )
+                    if(thisthing.state.swapType === 'triggerswap' && !thisthing.state.presigned) {
+                        // nft purchase with pre-signed tx
+                        thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Pre-sign the NFT claim transaction.', statusColor: 'info', showButton: true, showQr: false, buttonText: 'Sign'});
+                        break;
+                    }
+                    thisthing.setState({showLoading: true, showStatus: true, swapStatus: 'LNSwap.org is locking funds into the swap contract.', txId: data.transaction.id, statusColor: 'warn', showButton: false, showQr: false});
                     break;
                     
                 case "transaction.confirmed":
-                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Funds are locked in the swap contract. Ready to claim.', statusColor: 'success', showButton: true, showQr: false});
+                    let statusText = 'Funds are locked. Ready to claim.';
+                    if(thisthing.state.swapType === 'triggerswap' && thisthing.state.presigned) {
+                        statusText = 'Funds are locked. Claiming NFT.'
+                    }
+                    thisthing.setState({showLoading: false, showStatus: true, swapStatus: statusText, txId: data.transaction.id, statusColor: 'success', showButton: true, showQr: false});
                     break;
 
                 case "transaction.claimed":
@@ -907,10 +921,11 @@ class Widget extends React.Component {
         // (claimStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)))
         const functionArgs = [
           bufferCV(Buffer.from(preimage,'hex')),
-          bufferCV(Buffer.from(paddedamount,'hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from(paddedtimelock,'hex')),
+          uintCV(smallamount)
+        //   bufferCV(Buffer.from(paddedamount,'hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from(paddedtimelock,'hex')),
         ];
         const txOptions = {
           contractAddress: contractAddress,
@@ -1012,10 +1027,11 @@ class Widget extends React.Component {
         // (triggerStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)) (nftPrincipal <claim-for-trait>) (userPrincipal principal)
         const functionArgs = [
           bufferCV(Buffer.from(preimage,'hex')),
-          bufferCV(Buffer.from(paddedamount,'hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from(paddedtimelock,'hex')),
+          uintCV(smallamount),
+        //   bufferCV(Buffer.from(paddedamount,'hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from(paddedtimelock,'hex')),
           contractPrincipalCV(nftAddress, nftName),
         //   standardPrincipalCV(this.state.claimAddress), // removed on triggerswap-v2
         ];
@@ -1125,10 +1141,11 @@ class Widget extends React.Component {
         // (triggerStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)) (nftPrincipal <claim-for-trait>) (userPrincipal principal)
         const functionArgs = [
           bufferCV(Buffer.from(preimage,'hex')),
-          bufferCV(Buffer.from(paddedamount,'hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from('01','hex')),
-          bufferCV(Buffer.from(paddedtimelock,'hex')),
+          uintCV(smallamount),
+        //   bufferCV(Buffer.from(paddedamount,'hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from('01','hex')),
+        //   bufferCV(Buffer.from(paddedtimelock,'hex')),
         //   contractPrincipalCV(nftAddress, nftName),
           standardPrincipalCV(this.state.receiverAddress),
           stringAsciiCV(this.state.stxMemo),
@@ -1168,7 +1185,7 @@ class Widget extends React.Component {
             "tx": rawTx,
         }
         console.log(`creating broadcastsponsoredtx with: `, reqbody);
-        fetch(`${apiUrl}/broadcastsponsoredtx`, {
+        fetch(`${apiUrl}/zbroadcastsponsoredtx`, {
             method: 'post',
             headers: {
                 'Accept': 'application/json, text/plain, */*',
@@ -1179,27 +1196,26 @@ class Widget extends React.Component {
             .then(res => {
                 console.log("broadcastsponsoredtx response: ", res);
                 if(res.error) {
-                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. '+res.error, statusColor: 'error', showQr: false});
+                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. '+res.error, statusColor: 'error', showQr: false, showButton: false,});
                     return;
                 }
                 if(JSON.stringify(res).includes('error')) {
-                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. ', statusColor: 'error', showQr: false});
+                    this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. ', statusColor: 'error', showQr: false, showButton: false,});
                     return;
                 }
-                this.setState({txId: res.transactionId, });
+                if(res.transactionId && res.transactionId.transactionId && res.transactionId.transactionId === 'txsaved') {
+                    this.setState({showStatus: true, swapStatus: 'Transaction saved. Locking funds.', statusColor: 'warn', showQr: false, presigned: true,});
+                }
+                if(res.transactionId && res.transactionId.transactionId && res.transactionId.transactionId !== 'txsaved') {
+                    this.setState({txId: res.transactionId.transactionId, });
+                }
                 // this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, swapObj: res, invoiceAmountBTC, showQr: true});
                 // this.listenswap();
             }).catch(e => {
                 console.log(`broadcastSponsoredTx error: `, e);
-                this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. Please try again later.', statusColor: 'error', showQr: false});
+                this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. Please try again later.', statusColor: 'error', showQr: false, showButton: false,});
             });  
     }
-
-    // removed from package.json - readded
-    // "@stacks/connect": "^6.2.0",
-    // "@stacks/network": "^2.0.1",
-    // "@stacks/transactions": "^2.0.1",
-
 };
 
 export default Widget;
