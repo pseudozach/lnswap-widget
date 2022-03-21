@@ -83,7 +83,7 @@ if(Config.apiUrl.includes("lnswap")){
 //     console.log('network is testnet')
 //   activeNetwork = testnet
 // }
-
+// console.log('widget network: ', Config.mocknetUrl, Config.apiUrl, activeNetwork)
 
 // danger!!! use only for testing
 // const appConfig = new AppConfig(['store_write', 'publish_data']);
@@ -252,7 +252,7 @@ class Widget extends React.Component {
                             </IconButton>
                         </Paper>
                         <Typography id="modal-modal-title" variant="h6" component="h2" sx={{ textAlign: 'center', mt: 2 }}>
-                        {this.state.headerText}
+                            {this.state.headerText}
                         </Typography>
                         <Typography id="modal-modal-description" variant="body1" sx={{ mb: 2, mx: 2, fontWeight: 100, textAlign: 'center', }}>
                         Confirm details and pay the LN invoice to start the swap.
@@ -429,7 +429,7 @@ class Widget extends React.Component {
                                         <CheckCircleIcon color="success" fontSize="large" sx={{m:1, fontSize: 36}} />
                                     ) : null}
                                     <Typography variant="body1" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center', display: 'flex', alignItems: 'center', marginBottom: 0, }} color={this.state.statusColor}>
-                                    {this.state.swapStatus}
+                                        {this.state.swapStatus}
                                     </Typography>
                                 </Paper>
                             ) : null}
@@ -916,7 +916,7 @@ class Widget extends React.Component {
       
         let paddedamount = swapamount.padStart(32, "0");
         let paddedtimelock = timeLock.toString(16).padStart(32, "0");
-        // console.log("amount, timelock ", smallamount, swapamount, paddedamount, paddedtimelock);
+        // console.log("amount, timelock ", smallamount, swapamount, paddedamount, paddedtimelock, activeNetwork);
       
         // (claimStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)))
         const functionArgs = [
