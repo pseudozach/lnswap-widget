@@ -833,7 +833,7 @@ class Widget extends React.Component {
 
                 case "transaction.mempool":
                     console.log('tx.mempool ', thisthing.state, )
-                    if(thisthing.state.swapType === 'triggerswap' && !thisthing.state.presigned) {
+                    if((thisthing.state.swapType === 'triggerswap') && !thisthing.state.presigned && thisthing.state.sponsoredTx) {
                         // nft purchase with pre-signed tx
                         thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Pre-sign the NFT claim transaction.', statusColor: 'info', showButton: true, showQr: false, buttonText: 'Sign'});
                         break;
