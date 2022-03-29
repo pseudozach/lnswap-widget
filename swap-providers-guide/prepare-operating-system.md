@@ -68,16 +68,14 @@ Your server should only have ports open that are crucial to the functioning of y
 sudo apt install ufw
 ```
 
-Allow ports that are required for Bitcoin/Lightning/Stacks nodes and bridge app.
+Allow ports that are required for Bitcoin/Lightning nodes and client app.
 
 ```
 ufw allow ssh
 ufw allow 8332
 ufw allow 8333
 ufw allow 9735
-ufw allow 20443
-ufw allow 20444
-ufw allow 9002
+ufw allow 9008
 ufw enable
 ```
 
