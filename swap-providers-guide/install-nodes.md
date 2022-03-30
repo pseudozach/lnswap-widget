@@ -26,10 +26,18 @@ testnet=0
 server=1
 daemon=1
 txindex=1
-zmqpubrawblock=tcp://127.0.0.1:8332
-zmqpubrawtx=tcp://127.0.0.1:8333
+zmqpubrawblock=tcp://127.0.0.1:28332
+zmqpubrawtx=tcp://127.0.0.1:28333
 rpcbind=127.0.0.1
 rpcallowip=127.0.0.1/32
+
+// if you are running provider client as a docker container add these
+zmqpubrawblock=tcp://172.17.0.1:28332
+zmqpubrawtx=tcp://172.17.0.1:28333
+zmqpubhashtx=tcp://172.17.0.1:28333
+zmqpubhashblock=tcp://172.17.0.1:28333
+rpcbind=172.17.0.1
+rpcallowip=172.0.0.0/8
 
 // unpack and run bitcoind
 tar zxvf bitcoin-22.0-x86_64-linux-gnu.tar.gz
@@ -50,6 +58,9 @@ vim ~/.lnd/lnd.conf
 externalip=xx.xx.xx.xx // public IP of your server
 listen=localhost:9735
 alias=<your optional alias>
+
+// if you are running provider client as a docker container add this
+rpclisten=172.17.0.1:10009
 
 // only if you have installed tor and want to run your lightning node on tor
 [tor] 
