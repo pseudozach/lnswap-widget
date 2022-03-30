@@ -26,8 +26,8 @@ testnet=0
 server=1
 daemon=1
 txindex=1
-zmqpubrawblock=tcp://127.0.0.1:28332
-zmqpubrawtx=tcp://127.0.0.1:28333
+zmqpubrawblock=tcp://127.0.0.1:8332
+zmqpubrawtx=tcp://127.0.0.1:8333
 rpcbind=127.0.0.1
 rpcallowip=127.0.0.1/32
 
