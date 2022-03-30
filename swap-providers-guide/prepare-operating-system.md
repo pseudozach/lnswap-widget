@@ -76,6 +76,10 @@ ufw allow 8333
 ufw allow 9735
 ufw allow 9008
 ufw enable
+
+// if your BTC/LND is on linux but lnstxbridge client is on Docker
+ufw allow from 172.0.0.0/8 to any port 8332
+ufw allow from 172.0.0.0/8 to any port 10009
 ```
 
 </details>
