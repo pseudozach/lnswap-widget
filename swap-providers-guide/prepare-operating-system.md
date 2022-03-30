@@ -72,7 +72,6 @@ Allow ports that are required for Bitcoin/Lightning nodes and client app.
 
 ```
 ufw allow ssh
-ufw allow 8332
 ufw allow 8333
 ufw allow 9735
 ufw allow 9008
