@@ -105,3 +105,22 @@ echo \
 ```
 
 </details>
+
+<details>
+
+<summary>Install Tor</summary>
+
+```
+sudo apt install tor
+
+// configure tor to work with lnd
+sudo vim /etc/tor/torrc
+# add these two lines 
+ControlPort 9051
+CookieAuthentication 1
+
+// restart tor
+systemctl restart tor
+```
+
+</details>
