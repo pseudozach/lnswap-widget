@@ -835,7 +835,7 @@ class Widget extends React.Component {
                     console.log('tx.mempool ', thisthing.state, )
                     if((thisthing.state.swapType === 'triggerswap') && !thisthing.state.presigned && thisthing.state.sponsoredTx) {
                         // nft purchase with pre-signed tx
-                        thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Pre-sign the NFT claim transaction.', statusColor: 'info', showButton: true, showQr: false, buttonText: 'Sign'});
+                        thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Pre-sign the NFT claim transaction.', statusColor: 'info', showButton: true, showQr: false, buttonText: 'Confirm'});
                         break;
                     }
                     thisthing.setState({showLoading: true, showStatus: true, swapStatus: 'LNSwap.org is locking funds into the swap contract.', txId: data.transaction.id, statusColor: 'warn', showButton: false, showQr: false});
