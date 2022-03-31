@@ -25,7 +25,7 @@
     <div><button onclick="startSwap();">Launch LNSwap Widget</button></div>
 
 
-    <h3>Use Case - 2: (Custodial) Mint NFT on Stacks with Lightning</h3>
+    <!-- <h3>Use Case - 2: (Custodial) Mint NFT on Stacks with Lightning</h3>
     <p>Note: Swap is not trustless.</p>
     <div style="margin:4px;">
         <span>NFT Contract Address</span>
@@ -43,21 +43,21 @@
         <span>NFT Contract Claim/Mint Signature</span>
         <input type="text" id="contractSignature" placeholder="claim-for" value="claim-for" style="min-width: 400px;"/>
     </div>
-    <div><button onclick="startDirectSwap();">Launch LNSwap Widget</button></div>
+    <div><button onclick="startDirectSwap();">Launch LNSwap Widget</button></div> -->
 
 
-    <h3>Use Case - 3: (Non-Custodial) Mint NFT on Stacks with Lightning</h3>
+    <h3>Use Case - 2: (Non-Custodial) Mint NFT on Stacks with Lightning</h3>
     <div style="margin:4px;">
         <span>NFT Contract Address</span>
         <input type="text" id="nccontractAddress" placeholder="SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.stacks-roots-v2" style="min-width: 500px;"/>
     </div>
     <div style="margin:4px;">
         <span>User's STX Address</span>
-        <input type="text" class="stxaddress" placeholder="SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX" style="min-width: 400px;"/>
+        <input type="text" class="stxaddress" placeholder="SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX" value="ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF" style="min-width: 400px;"/>
     </div>
     <div style="margin:4px;">
         <span>STX Amount</span>
-        <input type="number" class="stxamount" placeholder="5"/>
+        <input type="number" class="stxamount" placeholder="5" value="5"/>
     </div>
     <div style="margin:4px;">
         <span>NFT Contract Claim/Mint Signature</span>
@@ -65,11 +65,11 @@
     </div>
     <div style="margin:4px;">
         <span>Sponsored Transaction (Set to true if user has no STX)</span>
-        <input type="text" id="sponsoredTx" placeholder="false" value="false"/>
+        <input type="text" id="sponsoredTx" placeholder="false" value="true"/>
     </div>
     <div><button onclick="startTriggerSwap();">Launch LNSwap Widget</button></div>
 
-    <h3>Use Case - 4: Pay someone STX with Lightning</h3>
+    <h3>Use Case - 3: Pay someone STX with Lightning</h3>
     <!-- <div style="margin:4px;">
         <span>NFT Contract Address</span>
         <input type="text" id="nccontractAddress" placeholder="SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.stacks-roots-v2" style="min-width: 500px;"/>
@@ -150,21 +150,21 @@
             console.log('starting lnswap with ', stxaddress, stxamount);
             lnswap('swap', 'reversesubmarine', stxaddress, stxamount);
         }
-        function startDirectSwap(){
+        // function startDirectSwap(){
+        //     const stxaddress = document.getElementsByClassName('stxaddress')[1].value;
+        //     const stxamount = document.getElementsByClassName('stxamount')[1].value;
+        //     const contractAddress = document.getElementById('contractAddress').value;
+        //     const contractSignature = document.getElementById('contractSignature').value;
+        //     if(!stxaddress || !stxamount || !contractAddress || !contractSignature) {
+        //         alert('please provide required values');
+        //         return false;
+        //     }
+        //     console.log('starting lnswap with ', stxaddress, stxamount);
+        //     lnswap('swap', 'mintnft', stxaddress, stxamount, contractAddress, contractSignature);
+        // }
+        function startTriggerSwap(){
             const stxaddress = document.getElementsByClassName('stxaddress')[1].value;
             const stxamount = document.getElementsByClassName('stxamount')[1].value;
-            const contractAddress = document.getElementById('contractAddress').value;
-            const contractSignature = document.getElementById('contractSignature').value;
-            if(!stxaddress || !stxamount || !contractAddress || !contractSignature) {
-                alert('please provide required values');
-                return false;
-            }
-            console.log('starting lnswap with ', stxaddress, stxamount);
-            lnswap('swap', 'mintnft', stxaddress, stxamount, contractAddress, contractSignature);
-        }
-        function startTriggerSwap(){
-            const stxaddress = document.getElementsByClassName('stxaddress')[2].value;
-            const stxamount = document.getElementsByClassName('stxamount')[2].value;
             const contractAddress = document.getElementById('nccontractAddress').value;
             const contractSignature = document.getElementById('nccontractSignature').value;
             const sponsoredTx = document.getElementById('sponsoredTx').value;
@@ -176,8 +176,8 @@
             lnswap('swap', 'triggerswap', stxaddress, stxamount, contractAddress, contractSignature, sponsoredTx);
         }
         function startTriggerTransferSwap(){
-            const stxaddress = document.getElementsByClassName('stxaddress')[3].value;
-            const stxamount = document.getElementsByClassName('stxamount')[3].value;
+            const stxaddress = document.getElementsByClassName('stxaddress')[2].value;
+            const stxamount = document.getElementsByClassName('stxamount')[2].value;
             const receiveraddress= document.getElementById('receiveraddress').value;
             const stxmemo = document.getElementById('stxmemo').value;
             const sponsoredTx = document.getElementById('sttssponsoredTx').value;
@@ -189,7 +189,7 @@
             lnswap('swap', 'triggertransferswap', stxaddress, stxamount, '', '', sponsoredTx, receiveraddress, stxmemo);
         }
         function startTriggerSwapDemo(){
-            const stxaddress = document.getElementsByClassName('stxaddress')[4].value;
+            const stxaddress = document.getElementsByClassName('stxaddress')[3].value;
             const stxamount = 5;
             const contractAddress = 'SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX.cube';
             const contractSignature = 'claim';
