@@ -433,7 +433,7 @@ class Widget extends React.Component {
                                     </Typography>
                                 </Paper>
                             ) : null}
-                            {(this.state.showStatus && (this.state.swapStatus.includes("locking") || this.state.swapStatus.includes("Claiming") || this.state.swapStatus.includes("pre-signed"))) ? (
+                            {(this.state.showStatus && (this.state.swapStatus.includes("locking") || this.state.swapStatus.includes("Claiming") || this.state.swapStatus.includes("NFT in your wallet"))) ? (
                                 <Paper variant="outlined" sx={{backgroundColor: '#f8f4fc', m:1, py:1, mb:2, display: 'flex', }} fullWidth>
                                     <Typography variant="caption" gutterBottom component="div" sx={{ mx: 'auto', textAlign: 'center', display: 'flex', alignItems: 'center', marginBottom: 0, wordWrap: "break-word",  }} color={this.state.statusColor}>
                                     {this.state.swapStatus.includes("locking") ? '* Please wait, this could take approx. 10 minutes.' : '* You can safely close this window.'}
@@ -1204,7 +1204,7 @@ class Widget extends React.Component {
                     return;
                 }
                 if(res.transactionId && res.transactionId.transactionId && res.transactionId.transactionId === 'txsaved') {
-                    this.setState({showStatus: true, swapStatus: 'Transaction saved. Locking funds.', statusColor: 'warn', showQr: false, presigned: true,});
+                    this.setState({showStatus: true, swapStatus: 'Tx saved. You will receive your NFT in your wallet soon.', statusColor: 'warn', showQr: false, presigned: true,});
                 }
                 if(res.transactionId && res.transactionId.transactionId && res.transactionId.transactionId !== 'txsaved') {
                     this.setState({txId: res.transactionId.transactionId, });
