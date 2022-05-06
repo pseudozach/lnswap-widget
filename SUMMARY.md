@@ -17,4 +17,4 @@
 
 * [Discord](https://discord.gg/Gt45nMYPCM)
 * [Twitter](https://twitter.com/ln\_swap)
-* [Github](https://github.com/pseudozach/lnstxbridge)
+* [Github](https://github.com/LNSwap/lnstxbridge)
