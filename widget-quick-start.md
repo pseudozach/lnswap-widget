@@ -110,7 +110,7 @@ lnswap('swap',
        'sdcreategame', // or sdjoingame 
        'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF', 
        25, 
-       '',
+       'ST30VXWG00R13WK8RDXBSTHXNWGNKCAQTRYEMA9FK.trustless-rewards',
        '',
        'false',
        '',
