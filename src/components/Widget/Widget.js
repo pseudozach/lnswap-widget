@@ -85,10 +85,13 @@ if(Config.apiUrl.includes("lnswap")){
 // }
 // console.log('widget network: ', Config.mocknetUrl, Config.apiUrl, activeNetwork)
 
+//////////////////////////////////
 // danger!!! use only for testing
+// LOGOUT USER - FORCE LOGIN   //
 // const appConfig = new AppConfig(['store_write', 'publish_data']);
 // let userSession = new UserSession({ appConfig });
 // userSession.signUserOut();
+//////////////////////////////////
 
 const widgetName = Config.name;
 const apiUrl = Config.apiUrl;
@@ -537,6 +540,11 @@ class Widget extends React.Component {
                     this.triggerTransferStx();
                     break;
 
+                case 'sdcreategame':
+                case 'sdjoingame':
+                    this.triggerTrustlessRewards();
+                    break;
+
                 default:    
                     console.log(`swapType not found `, this.state.swapType)
                     break;
@@ -613,6 +621,8 @@ class Widget extends React.Component {
         let headerText;
         if(message[0] === 'reversesubmarine' || message[0] === 'triggertransferswap') {
             headerText = 'Send BTC, Receive STX'
+        } else if(message[0] === 'sdcreategame' || message[0] === 'sdjoingame') {  
+            headerText = 'Trustless Rewards'
         } else {
             headerText = 'Send BTC, Receive NFT'
         }
@@ -627,6 +637,7 @@ class Widget extends React.Component {
             sponsoredTx: message[5] === "true" || message[5] === true, 
             receiverAddress: message[6] || "",
             stxMemo: message[7] || "",
+            callParameters: message[8] || [],
             headerText,
             modalIsOpen: true
         });
@@ -668,6 +679,8 @@ class Widget extends React.Component {
 
                     case 'triggerswap':
                     case 'triggertransferswap':
+                    case 'sdcreategame':
+                    case 'sdjoingame':
                         this.createTriggerSwap();
                         break;
 
@@ -1158,6 +1171,139 @@ class Widget extends React.Component {
           // validateWithAbi: true,
           network: activeNetwork,
         //   postConditionMode: PostConditionMode.Allow,
+          postConditionMode: PostConditionMode.Deny,
+          postConditions,
+          sponsored: this.state.sponsoredTx,
+          // anchorMode: AnchorMode.Any,
+          onFinish: data => {
+            console.log('Stacks claim onFinish:', data);
+            if(!this.state.sponsoredTx) {
+                this.setState({txId: data.txId});
+            } else {
+                // sponsored tx - send signed tx to backend to broadcast
+                const serializedTx = data.stacksTransaction.serialize().toString('hex');
+                this.broadcastSponsoredTx(serializedTx);
+            }
+          },
+          onCancel: data => {
+            console.log('Stacks claim onCancel:', data);   
+            thisthing.setState({buttonLoading: false});
+          }
+        };
+        await openContractCall(txOptions);
+    }
+    triggerTrustlessRewards = async() => {  
+        let thisthing = this;
+
+        this.setState({buttonLoading: true,});
+        console.log("triggerTrustlessRewards state: ", this.state);
+        let contractAddress = this.state.swapObj.lockupAddress.split(".")[0].toUpperCase();
+        let contractName = this.state.swapObj.lockupAddress.split(".")[1]
+        // console.log("claimStx ", contractAddress, contractName)
+
+        const nftAddress = this.state.contractAddress.split(".")[0].toUpperCase();
+        const nftName = this.state.contractAddress.split(".")[1];
+      
+        let preimage = this.state.preimage;
+        // let amount = this.state.swapObj.onchainAmount;
+        let amount = this.state.stxAmountLarge;
+        let timeLock = this.state.swapObj.timeoutBlockHeight;
+      
+        console.log(`triggerTrustlessRewards ${amount} Stx with preimage ${preimage} and timelock ${timeLock} for nft ${nftAddress} ${nftName} and call to ${this.state.contractAddress}`);
+      
+        // console.log("amount, decimalamount: ", amount)
+        let smallamount = parseInt(amount / 100)
+        //  + 1 -> never do this
+        // console.log("smallamount: " + smallamount)
+      
+        let swapamount = smallamount.toString(16).split(".")[0] + "";
+
+        // post conditions disabled - couldnt make it work for some reason
+        let postConditionAmount = Math.ceil(parseInt(smallamount));
+        const postConditionAddress = contractAddress;
+        const postConditionCode = FungibleConditionCode.LessEqual;
+
+        // // With a contract principal
+        // const contractAddress = 'SPBMRFRPPGCDE3F384WCJPK8PQJGZ8K9QKK7F59X';
+        // const contractName = 'test-contract';
+
+        // // With a standard principal
+        // // const postConditionAddress = 'SP2ZD731ANQZT6J4K3F5N8A40ZXWXC1XFXHVVQFKE';
+        // const nftPostConditionCode = NonFungibleConditionCode.Owns;
+        // // const assetAddress = 'SP62M8MEFH32WGSB7XSF9WJZD7TQB48VQB5ANWSJ';
+        // // const assetContractName = 'test-asset-contract';
+        // const assetName = 'cube';
+        // const tokenAssetName = stringAsciiCV('cube');
+        // const nonFungibleAssetInfo = createAssetInfo(nftAddress, nftName, assetName);
+
+        // const standardNonFungiblePostCondition = makeStandardNonFungiblePostCondition(
+        //     this.state.claimAddress,
+        //     nftPostConditionCode,
+        //     nonFungibleAssetInfo,
+        //     tokenAssetName
+        // );
+
+        const standardStxPostCondition = makeStandardSTXPostCondition(
+            this.state.claimAddress,
+            FungibleConditionCode.LessEqual,
+            postConditionAmount
+        );
+
+        const postConditions = [
+          makeContractSTXPostCondition(
+            postConditionAddress,
+            contractName,
+            postConditionCode,
+            postConditionAmount
+          ),
+            // standardNonFungiblePostCondition
+            standardStxPostCondition
+        ];
+      
+        // console.log("postConditions: " + contractAddress, contractName, postConditionCode, postConditionAmount)
+      
+        // let paddedamount = swapamount.padStart(32, "0");
+        // let paddedtimelock = timeLock.toString(16).padStart(32, "0");
+        // console.log("amount, timelock, activeNetwork ", smallamount, swapamount, paddedamount, paddedtimelock, activeNetwork);
+      
+        let functionName = ''
+        let functionArgs;
+        if(this.state.swapType === 'sdcreategame') {
+            functionName = 'triggerCreateLobby';
+            // (triggerCreateLobby (preimage (buff 32)) (amount uint) (description (string-ascii 99)) (price uint) (factor uint) (commission uint) 
+            //   (mapy (string-ascii 30)) (length (string-ascii 10)) (traffic (string-ascii 10)) (curves (string-ascii 10)) (hours uint) (contractPrincipal <trustless-rewards-trait>)
+            functionArgs = [
+                bufferCV(Buffer.from(preimage,'hex')),
+                uintCV(smallamount),
+                stringAsciiCV(this.state.callParameters[0]),
+                uintCV(this.state.callParameters[1]),
+                uintCV(this.state.callParameters[2]),
+                uintCV(this.state.callParameters[3]),
+                stringAsciiCV(this.state.callParameters[4]),
+                stringAsciiCV(this.state.callParameters[5]),
+                stringAsciiCV(this.state.callParameters[6]),
+                stringAsciiCV(this.state.callParameters[7]),
+                uintCV(this.state.callParameters[8]),
+                contractPrincipalCV(nftAddress, nftName),
+            ];
+        } else {
+            functionName = 'triggerJoinLobby';
+            // (triggerJoinLobby (preimage (buff 32)) (amount uint) (id uint) (contractPrincipal <trustless-rewards-trait>))
+            functionArgs = [
+                bufferCV(Buffer.from(preimage,'hex')),
+                uintCV(smallamount),
+                uintCV(this.state.callParameters[0]),
+                contractPrincipalCV(nftAddress, nftName),
+            ];
+        }
+
+        const txOptions = {
+          contractAddress: contractAddress,
+          contractName: this.state.triggerContractName,
+          functionName,
+          functionArgs,
+          // validateWithAbi: true,
+          network: activeNetwork,
           postConditionMode: PostConditionMode.Deny,
           postConditions,
           sponsored: this.state.sponsoredTx,

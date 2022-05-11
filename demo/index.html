@@ -96,6 +96,33 @@
     </div>
     <div><button onclick="startTriggerTransferSwap();">Launch LNSwap Widget</button></div>
 
+    <h3>Use Case - 4: Trustless Rewards with Lightning (e.g. Stacks Degens)</h3>
+    <div style="margin:4px;">
+        <span>Contract Address</span>
+        <input type="text" class="contractAddress" placeholder="SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.trustless-rewards" value="ST30VXWG00R13WK8RDXBSTHXNWGNKCAQTRYEMA9FK.trustless-rewards" style="min-width: 500px;"/>
+    </div>
+    <div style="margin:4px;">
+        <span>User's STX Address</span>
+        <input type="text" class="stxaddress" placeholder="SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX" value="ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF" style="min-width: 400px;"/>
+    </div>
+    <div style="margin:4px;">
+        <span>STX Amount</span>
+        <input type="number" class="stxamount" placeholder="5" value="5" />
+    </div>
+    <div style="margin:4px;">
+        <span>Contract Call Type (create or join)</span>
+        <input type="text" id="callType" placeholder="create" value="create" style="min-width: 400px;"/>
+    </div>
+    <div style="margin:4px;">
+        <span>Other Contract Call Parameters (separated by comma)</span>
+        <input type="text" id="callParameters" placeholder="description,price,factor,commission..." value="lobby description,5,5,5,bigApple,normal,intense,straight,2" style="min-width: 400px;"/>
+    </div>
+    <div style="margin:4px;">
+        <span>Sponsored Transaction (Set to true if user has no STX)</span>
+        <input type="text" class="sponsoredTx" placeholder="false" value="false"/>
+    </div>
+    <div><button onclick="startTriggerTrustlessRewards();">Launch LNSwap Widget</button></div>
+
     <h4 style="margin-bottom: 2px;">Try on mainnet now: Mint a Cube NFT with 1-click via Lightning</h4>
     <div>
         <!-- <p></p> -->
@@ -189,7 +216,7 @@
             lnswap('swap', 'triggertransferswap', stxaddress, stxamount, '', '', sponsoredTx, receiveraddress, stxmemo);
         }
         function startTriggerSwapDemo(){
-            const stxaddress = document.getElementsByClassName('stxaddress')[3].value;
+            const stxaddress = document.getElementsByClassName('stxaddress')[4].value;
             const stxamount = 5;
             const contractAddress = 'SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX.cube';
             const contractSignature = 'claim';
@@ -200,6 +227,20 @@
             }
             console.log('starting triggerswapdemo with ', stxaddress, stxamount);
             lnswap('swap', 'triggerswap', stxaddress, stxamount, contractAddress, contractSignature, sponsoredTx);
+        }
+        function startTriggerTrustlessRewards(){
+            const stxaddress = document.getElementsByClassName('stxaddress')[3].value;
+            const stxamount = document.getElementsByClassName('stxamount')[3].value;
+            const contractAddress = document.getElementsByClassName('contractAddress')[0].value;
+            const callType = document.getElementById('callType').value;
+            const callParameters = document.getElementById('callParameters').value;
+            const sponsoredTx = document.getElementsByClassName('sponsoredTx')[0].value;
+            if(!stxaddress || !stxamount || !callParameters) {
+                alert('please provide required values');
+                return false;
+            }
+            console.log('starting startTriggerTrustlessRewards with ', stxaddress, stxamount, contractAddress, sponsoredTx, callType, callParameters.split(','));
+            lnswap('swap', `sd${callType}game`, stxaddress, stxamount, contractAddress, '', sponsoredTx, '', '', callParameters.split(','));
         }
         // listen to mint tx ID from the iframe
         window.onmessage = function(e) {

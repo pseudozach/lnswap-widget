@@ -2,12 +2,12 @@ function getConfig() {
     return {
         name: "LNSwap-Widget",
         apiUrl: "https://api.lnswap.org:9007",
-        // apiUrl: "https://9002-pseudozach-lnstxbridge-6zdqjy5d9y8.ws-us27.gitpod.io",
+        // apiUrl: "https://9007-pseudozach-lnstxbridge-xa92ji3mv8l.ws-us44.gitpod.io",
         // apiUrl: "http://localhost:9007",
         mocknetUrl: "http://localhost:3999",
-        // mocknetUrl: "https://3999-pseudozach-lnstxbridge-6ldqjy5d9y8.ws-us27.gitpod.io",
+        // mocknetUrl: "https://3999-pseudozach-lnstxbridge-xa92ji3mv8l.ws-us44.gitpod.io",
         pairId: "BTC/STX",
-        triggerContractName: 'triggerswap-v5',
+        triggerContractName: 'triggerswap-v6',
     }
 }
 
