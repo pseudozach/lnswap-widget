@@ -1,7 +1,7 @@
-# 🚀 Quick Start
+# 🚀 Widget Quick Start
 
 {% hint style="success" %}
-All swaps (except Custodial Mint) are trustless and there's no risk to user funds. If user navigates away from the page or swap fails for any reason, user's Lightning invoice payment will be canceled in \~24 hours and their funds will return to their Lightning wallet.
+All swaps are trustless and there's no risk to user funds. If user navigates away from the page or swap fails for any reason, user's Lightning invoice payment will be canceled in \~24 hours and their funds will return to their Lightning wallet.
 {% endhint %}
 
 ## No need for API keys&#x20;
@@ -12,7 +12,7 @@ Discord: [https://discord.gg/8jGPCKmnnA](https://discord.gg/8jGPCKmnnA)
 
 Twitter: [https://twitter.com/ln\_swap](https://twitter.com/ln\_swap)
 
-Email: [lnswap@pseudozach.com](mailto:lnswap@pseudozach.com)
+Email: [hi@lnswap.org](mailto:hi@lnswap.org)
 
 ## Install the widget
 
@@ -39,9 +39,9 @@ The best way to interact with our API is to use the below code to make it availa
 To create your first swap request, populate the values below and call the `lnswap` function which will make the required call to LNSwap API.
 
 {% hint style="warning" %}
-**Heads up:** If you plan to use `Custodial Mint` please reach out to ensure that transactions will succeed as the `claim-for` contract call should conform to the expected trait.
+**How it works:** Stacks contract calls are triggered when required STX (or SIP10) is locked into the [swap contract](https://explorer.stacks.co/txid/SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.stxswap\_v10?chain=mainnet) and once it's confirmed, user calls one of the `trigger` calls that can be found in the triggerswap contract.
 
-Here's a sample NFT contract: [https://explorer.stacks.co/txid/SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.stacks-roots-v2?chain=mainnet](https://explorer.stacks.co/txid/SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.stacks-roots-v2?chain=mainnet)
+Here's the latest triggerswap contract: [https://explorer.stacks.co/txid/SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.triggerswap-v6?chain=mainnet](https://explorer.stacks.co/txid/SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.triggerswap-v5?chain=mainnet)
 {% endhint %}
 
 Take a look at different swap types you can trigger using the widget:
@@ -54,11 +54,12 @@ lnswap('swap',
        'swapType', 
        'user stx address', 
        'amount in STX', 
-       '(only for mintnft/triggerswap) NFT Contract Address',
+       '(only for mintnft/triggerswap/trustless rewards) NFT/Game Contract Address',
        '(only for mintnft) NFT Mint Function Name',
        'sponsored transaction'
        '(only for triggertransferswap) receiver stx address',
-       '(only for triggertransferswap) stx transfer memo');
+       '(only for triggertransferswap) stx transfer memo',
+       '(only for trustless rewards) array of required parameters');
 ```
 
 
@@ -102,15 +103,19 @@ lnswap('swap',
 ```
 {% endtab %}
 
-{% tab title="Custodial Mint with LN" %}
+{% tab title="Trustless Rewards" %}
 ```javascript
-// e.g. (Custodial) Mint NFT with Lightning 
+// e.g. Create or Join a Stacks Degens Race
 lnswap('swap', 
-       'mintnft', 
+       'sdcreategame', // or sdjoingame 
        'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF', 
        25, 
-       'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF.stacks-roots-v2',
-       'claim-for');
+       '',
+       '',
+       'false',
+       '',
+       '',
+       [description, price, factor, commission, mapy, length, traffic, curves, hours); // [id] for sdjoingame
 ```
 {% endtab %}
 {% endtabs %}
