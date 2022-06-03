@@ -6,7 +6,9 @@ All swaps are trustless and there's no risk to user funds. If user navigates awa
 
 ## No need for API keys&#x20;
 
-You can integrate the library into your app and start making requests on mainnet right away. If you need help integrating or testing the widget, feel free to contact us.
+You can integrate the library into your app and start making requests on **mainnet** right away. If you need help integrating or testing the widget, feel free to contact us.
+
+If you prefer **testnet** you can test the available widget functions at [http://testnet.lnswap.org:8081](http://testnet.lnswap.org:8081/widget.js) or embed the widget into your site from [http://testnet.lnswap.org:8081/widget.js](http://testnet.lnswap.org:8081/widget.js).
 
 Discord: [https://discord.gg/8jGPCKmnnA](https://discord.gg/8jGPCKmnnA)
 
