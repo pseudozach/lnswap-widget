@@ -76,15 +76,15 @@
     </div> -->
     <div style="margin:4px;">
         <span>User's STX Address</span>
-        <input type="text" class="stxaddress" placeholder="SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX" style="min-width: 400px;"/>
+        <input type="text" class="stxaddress" placeholder="SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX" style="min-width: 400px;" value="ST2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG6ERHWB7"/>
     </div>
     <div style="margin:4px;">
         <span>STX Amount</span>
-        <input type="number" class="stxamount" placeholder="5"/>
+        <input type="number" class="stxamount" placeholder="5" value="5"/>
     </div>
     <div style="margin:4px;">
         <span>Receiver's STX Address</span>
-        <input type="text" id="receiveraddress" placeholder="SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY" style="min-width: 400px;"/>
+        <input type="text" id="receiveraddress" placeholder="SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY" style="min-width: 400px;" value="ST1GH2VFAZ7ZB02JHBTMJSQYKJ83ESCNBZ0PJ4MMQ"/>
     </div>
     <div style="margin:4px;">
         <span>STX Transfer Memo</span>
@@ -99,7 +99,7 @@
     <h3>Use Case - 4: Trustless Rewards with Lightning (e.g. Stacks Degens)</h3>
     <div style="margin:4px;">
         <span>Contract Address</span>
-        <input type="text" class="contractAddress" placeholder="SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.trustless-rewards" value="ST30VXWG00R13WK8RDXBSTHXNWGNKCAQTRYEMA9FK.trustless-rewards" style="min-width: 500px;"/>
+        <input type="text" class="contractAddress" placeholder="SP2507VNQZC9VBXM7X7KB4SF4QJDJRSWHG4V39WPY.trustless-rewards" value="ST38F25DF7V9VN1TP2Y9QP7A1KB4AF7PK8CHV4QF7.trustless-rewards" style="min-width: 500px;"/>
     </div>
     <div style="margin:4px;">
         <span>User's STX Address</span>
@@ -122,6 +122,21 @@
         <input type="text" class="sponsoredTx" placeholder="false" value="false"/>
     </div>
     <div><button onclick="startTriggerTrustlessRewards();">Launch LNSwap Widget</button></div>
+
+    <h3>Use Case - 5: Stack STX with Lightning</h3>
+    <div style="margin:4px;">
+        <span>User's STX Address</span>
+        <input type="text" class="stxaddress" placeholder="SP27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QWHH3BXX" value="ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF" style="min-width: 400px;"/>
+    </div>
+    <div style="margin:4px;">
+        <span>STX Amount</span>
+        <input type="number" class="stxamount" placeholder="5" value="5" />
+    </div>
+    <div style="margin:4px;">
+        <span>Sponsored Transaction (Set to true if user has no STX)</span>
+        <input type="text" class="sponsoredTx" placeholder="false" value="false"/>
+    </div>
+    <div><button onclick="startTriggerStacking();">Launch LNSwap Widget</button></div>
 
     <h4 style="margin-bottom: 2px;">Try on mainnet now: Mint a Cube NFT with 1-click via Lightning</h4>
     <div>
@@ -241,6 +256,17 @@
             }
             console.log('starting startTriggerTrustlessRewards with ', stxaddress, stxamount, contractAddress, sponsoredTx, callType, callParameters.split(','));
             lnswap('swap', `sd${callType}game`, stxaddress, stxamount, contractAddress, '', sponsoredTx, '', '', callParameters.split(','));
+        }
+        function startTriggerStacking(){
+            const stxaddress = document.getElementsByClassName('stxaddress')[4].value;
+            const stxamount = document.getElementsByClassName('stxamount')[4].value;
+            const sponsoredTx = document.getElementsByClassName('sponsoredTx')[1].value;
+            if(!stxaddress || !stxamount) {
+                alert('please provide required values');
+                return false;
+            }
+            console.log('starting startTriggerStacking with ', stxaddress, stxamount, sponsoredTx);
+            lnswap('swap', `stacking`, stxaddress, stxamount, '', '', sponsoredTx, '', '', '');
         }
         // listen to mint tx ID from the iframe
         window.onmessage = function(e) {
