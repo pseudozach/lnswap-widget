@@ -120,10 +120,25 @@ lnswap('swap',
        [description, price, factor, commission, mapy, length, traffic, curves, hours); // [id] for sdjoingame
 ```
 {% endtab %}
+
+{% tab title="Stacking" %}
+```javascript
+// e.g. Stack STX with Lightning 
+lnswap('swap', 
+       'stacking', 
+       'ST27SD3H5TTZXPBFXHN1ZNMFJ3HNE2070QX7ZN4FF',
+       25, 
+       '',
+       '',
+       'false',
+       '',
+       '');
+```
+{% endtab %}
 {% endtabs %}
 
 {% hint style="info" %}
-Note that you can listen to widget updates from the host page via [cross-origin communications](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage).
+Note that you can listen to widget updates from the host page via [cross-origin communications](https://developer.mozilla.org/en-US/docs/Web/API/Window/postMessage) as below.&#x20;
 {% endhint %}
 
 ```javascript
