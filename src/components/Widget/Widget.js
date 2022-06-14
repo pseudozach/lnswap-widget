@@ -35,6 +35,7 @@ import { AppConfig, UserSession, showConnect, openContractCall } from '@stacks/c
 import {
   bufferCV,
   uintCV,
+  noneCV,
   contractPrincipalCV,
   standardPrincipalCV,
   // makeStandardSTXPostCondition,
@@ -1346,7 +1347,8 @@ class Widget extends React.Component {
         let contractName = this.state.swapObj.lockupAddress.split(".")[1]
         // console.log("claimStx ", contractAddress, contractName)
 
-        // const nftAddress = this.state.contractAddress.split(".")[0].toUpperCase();
+        // SP1K1A1PMGW2ZJCNF46NWZWHG8TS1D23EGH1KNK60 -> friedger 1-cycle 
+        const delegateAddress = this.state.contractAddress.toUpperCase() || 'SP1K1A1PMGW2ZJCNF46NWZWHG8TS1D23EGH1KNK60';
         // const nftName = this.state.contractAddress.split(".")[1];
       
         let preimage = this.state.preimage;
@@ -1354,7 +1356,7 @@ class Widget extends React.Component {
         let amount = this.state.stxAmountLarge;
         let timeLock = this.state.swapObj.timeoutBlockHeight;
       
-        console.log(`triggerStacking claiming ${amount} Stx with preimage ${preimage} and timelock ${timeLock} and stack for ${this.state.claimAddress} on ${JSON.stringify(activeNetwork)}`);
+        console.log(`triggerStacking claiming ${amount} Stx with preimage ${preimage} and timelock ${timeLock} and delegate to ${delegateAddress} stack for ${this.state.claimAddress} on ${JSON.stringify(activeNetwork)}`);
       
         // console.log("amount, decimalamount: ", amount)
         let smallamount = parseInt(amount / 100)
@@ -1388,28 +1390,28 @@ class Widget extends React.Component {
         //     tokenAssetName
         // );
 
-        const standardStxPostCondition = makeStandardSTXPostCondition(
-            this.state.claimAddress,
-            FungibleConditionCode.LessEqual,
-            postConditionAmount
-        );
+        // const standardStxPostCondition = makeStandardSTXPostCondition(
+        //     this.state.claimAddress,
+        //     FungibleConditionCode.LessEqual,
+        //     postConditionAmount
+        // );
 
         const postConditions = [
-          makeContractSTXPostCondition(
-            postConditionAddress,
-            contractName,
-            postConditionCode,
-            postConditionAmount
-          ),
-            // standardNonFungiblePostCondition
-            standardStxPostCondition
+        //   makeContractSTXPostCondition(
+        //     postConditionAddress,
+        //     contractName,
+        //     postConditionCode,
+        //     postConditionAmount
+        //   ),
+        //     // standardNonFungiblePostCondition
+        //     standardStxPostCondition
         ];
       
         // console.log("postConditions: " + contractAddress, contractName, postConditionCode, postConditionAmount)
       
       
-        let paddedamount = swapamount.padStart(32, "0");
-        let paddedtimelock = timeLock.toString(16).padStart(32, "0");
+        // let paddedamount = swapamount.padStart(32, "0");
+        // let paddedtimelock = timeLock.toString(16).padStart(32, "0");
         // console.log("amount, timelock, activeNetwork ", smallamount, swapamount, paddedamount, paddedtimelock, activeNetwork);
       
         // (triggerStx (preimage (buff 32)) (amount (buff 16)) (claimAddress (buff 42)) (refundAddress (buff 42)) (timelock (buff 16)) (nftPrincipal <claim-for-trait>) (userPrincipal principal)
@@ -1421,8 +1423,8 @@ class Widget extends React.Component {
         //   bufferCV(Buffer.from('01','hex')),
         //   bufferCV(Buffer.from(paddedtimelock,'hex')),
         //   contractPrincipalCV(nftAddress, nftName),
-          standardPrincipalCV(this.state.claimAddress),
-        //   stringAsciiCV(this.state.stxMemo),
+          standardPrincipalCV(delegateAddress),
+          noneCV()
         ];
         const txOptions = {
           contractAddress: contractAddress,
