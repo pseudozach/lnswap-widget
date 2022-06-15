@@ -448,7 +448,7 @@ class Widget extends React.Component {
                                 </Paper>
                             ) : null}
                             {this.state.txId ? (
-                                    <Button variant="outlined" color="secondary" sx={{mt:1}} endIcon={<OpenInNew style={{color: 'black'}}/>} href={`https://explorer.stacks.co/txid/${this.state.txId}?chain=mainnet`} target="_blank">
+                                    <Button variant="outlined" color="secondary" sx={{mt:1}} endIcon={<OpenInNew style={{color: 'black'}}/>} href={`https://explorer.stacks.co/txid/${this.state.txId}?chain=${this.isTestnet() ? `testnet` : `mainnet`}`} target="_blank">
                                       View on Stacks Explorer
                                     </Button>
                                 // <a href={`https://explorer.stacks.co/txid/${this.state.txId}?chain=mainnet`} target="_blank">
@@ -797,6 +797,10 @@ class Widget extends React.Component {
                 }
                 this.setState({swapId: res.id, invoice: res.invoice.toUpperCase(), paymentLink: `lightning:${res.invoice}`, minerFeeInvoice, minerPaymentLink: `lightning:${minerFeeInvoice}`, swapObj: res, invoiceAmountBTC, showQr: true, swapStatus: 'This invoice is for the transaction fee' , showStatus, });
                 this.listenswap();
+                // triggerAllowContractCaller for stacking - so it confirms before claim call
+                if (this.state.swapType === 'stacking') {
+                    this.triggerAllowContractCaller();
+                }
             }).catch(e => {
                 console.log(`createtriggerswap error: `, e);
                 this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to create swap. Please try again later.', statusColor: 'error', showQr: false});
@@ -1338,6 +1342,49 @@ class Widget extends React.Component {
         };
         await openContractCall(txOptions);
     }
+    triggerAllowContractCaller = async() => {  
+        let thisthing = this;
+
+        let contractAddress = this.state.swapObj.lockupAddress.split(".")[0].toUpperCase();
+
+        this.setState({buttonLoading: true,});
+        console.log("triggerAllowContractCaller swapObj: ", this.state.swapObj);     
+        console.log(`triggerAllowContractCaller for ${this.state.claimAddress} to ${contractAddress}.${this.state.triggerContractName} on ${JSON.stringify(activeNetwork)} `);
+
+        // allow-contract-caller (caller principal) (until-burn-ht (optional uint)
+        const functionArgs = [
+          contractPrincipalCV(contractAddress, this.state.triggerContractName),
+          noneCV()
+        ];
+        const txOptions = {
+          contractAddress: this.isTestnet() ? 'ST000000000000000000002AMW42H' : 'SP000000000000000000002Q6VF78',
+          contractName: 'pox',
+          functionName: 'allow-contract-caller',
+          functionArgs: functionArgs,
+          // validateWithAbi: true,
+          network: activeNetwork,
+        //   postConditionMode: PostConditionMode.Allow,
+          postConditionMode: PostConditionMode.Deny,
+        //   postConditions,
+          sponsored: this.state.sponsoredTx,
+          // anchorMode: AnchorMode.Any,
+          onFinish: data => {
+            console.log('Stacks triggerAllowContractCaller onFinish:', data);
+            if(!this.state.sponsoredTx) {
+                this.setState({txId: data.txId});
+            } else {
+                // sponsored tx - send signed tx to backend to broadcast
+                const serializedTx = data.stacksTransaction.serialize().toString('hex');
+                this.broadcastSponsoredTx(serializedTx);
+            }
+          },
+          onCancel: data => {
+            console.log('Stacks triggerAllowContractCaller onCancel:', data);   
+            thisthing.setState({buttonLoading: false});
+          }
+        };
+        await openContractCall(txOptions);
+    }
     triggerStacking = async() => {  
         let thisthing = this;
 
@@ -1439,7 +1486,7 @@ class Widget extends React.Component {
           sponsored: this.state.sponsoredTx,
           // anchorMode: AnchorMode.Any,
           onFinish: data => {
-            console.log('Stacks claim onFinish:', data);
+            console.log('Stacks triggerStacking onFinish:', data);
             if(!this.state.sponsoredTx) {
                 this.setState({txId: data.txId});
             } else {
@@ -1449,7 +1496,7 @@ class Widget extends React.Component {
             }
           },
           onCancel: data => {
-            console.log('Stacks claim onCancel:', data);   
+            console.log('Stacks triggerStacking onCancel:', data);   
             thisthing.setState({buttonLoading: false});
           }
         };
@@ -1491,6 +1538,9 @@ class Widget extends React.Component {
                 console.log(`broadcastSponsoredTx error: `, e);
                 this.setState({showLoading: false, showStatus: true, swapStatus: 'Unable to broadcast transaction. Please try again later.', statusColor: 'error', showQr: false, showButton: false,});
             });  
+    }
+    isTestnet() {
+        return Config.apiUrl.includes("testnet")
     }
 };
 
