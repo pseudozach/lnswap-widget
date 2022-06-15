@@ -1344,10 +1344,8 @@ class Widget extends React.Component {
     }
     triggerAllowContractCaller = async() => {  
         let thisthing = this;
-
         let contractAddress = this.state.swapObj.lockupAddress.split(".")[0].toUpperCase();
-
-        this.setState({buttonLoading: true,});
+        
         console.log("triggerAllowContractCaller swapObj: ", this.state.swapObj);     
         console.log(`triggerAllowContractCaller for ${this.state.claimAddress} to ${contractAddress}.${this.state.triggerContractName} on ${JSON.stringify(activeNetwork)} `);
 
@@ -1370,13 +1368,13 @@ class Widget extends React.Component {
           // anchorMode: AnchorMode.Any,
           onFinish: data => {
             console.log('Stacks triggerAllowContractCaller onFinish:', data);
-            if(!this.state.sponsoredTx) {
-                this.setState({txId: data.txId});
-            } else {
-                // sponsored tx - send signed tx to backend to broadcast
-                const serializedTx = data.stacksTransaction.serialize().toString('hex');
-                this.broadcastSponsoredTx(serializedTx);
-            }
+            // if(!this.state.sponsoredTx) {
+            //     this.setState({txId: data.txId});
+            // } else {
+            //     // sponsored tx - send signed tx to backend to broadcast
+            //     const serializedTx = data.stacksTransaction.serialize().toString('hex');
+            //     this.broadcastSponsoredTx(serializedTx);
+            // }
           },
           onCancel: data => {
             console.log('Stacks triggerAllowContractCaller onCancel:', data);   
