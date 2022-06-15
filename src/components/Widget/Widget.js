@@ -571,6 +571,7 @@ class Widget extends React.Component {
                     // thisthing.claimStx();
                     // console.log(`connect finished`);
                     thisthing.setState({buttonText: 'Claim'});
+                    window.top.postMessage({target: 'lnswap', data: {status: 'Wallet connected'}}, '*')
                 },
                 userSession: userSession,
             }); 
@@ -708,7 +709,7 @@ class Widget extends React.Component {
                 // return e;
                 
                 // send status to host website
-                window.top.postMessage({target: 'lnswap', data: {txId: this.state.txId, swapId: this.state.swapId, status: 'Unable to reach LNSwap'}}, '*')
+                window.top.postMessage({target: 'lnswap', data: {txId: this.state.txId || '', swapId: this.state.swapId || '', status: 'Unable to reach LNSwap'}}, '*')
             });     
     }
     createSwap = () => {
@@ -970,6 +971,7 @@ class Widget extends React.Component {
           onFinish: data => {
             console.log('Stacks claim onFinish:', data);
             this.setState({txId: data.txId});
+            window.top.postMessage({target: 'lnswap', data: {txId: data.txId, swapId: this.state.swapId, status: 'claimStx pending'}}, '*')
           },
           onCancel: data => {
             console.log('Stacks claim onCancel:', data);   
@@ -1080,6 +1082,7 @@ class Widget extends React.Component {
             console.log('Stacks claim onFinish:', data);
             if(!this.state.sponsoredTx) {
                 this.setState({txId: data.txId});
+                window.top.postMessage({target: 'lnswap', data: {txId: data.txId, swapId: this.state.swapId, status: 'triggerStx pending'}}, '*')
             } else {
                 // sponsored tx - send signed tx to backend to broadcast
                 const serializedTx = data.stacksTransaction.serialize().toString('hex');
@@ -1196,6 +1199,7 @@ class Widget extends React.Component {
             console.log('Stacks claim onFinish:', data);
             if(!this.state.sponsoredTx) {
                 this.setState({txId: data.txId});
+                window.top.postMessage({target: 'lnswap', data: {txId: data.txId, swapId: this.state.swapId, status: 'triggerTransferStx pending'}}, '*')
             } else {
                 // sponsored tx - send signed tx to backend to broadcast
                 const serializedTx = data.stacksTransaction.serialize().toString('hex');
@@ -1329,6 +1333,7 @@ class Widget extends React.Component {
             console.log('Stacks claim onFinish:', data);
             if(!this.state.sponsoredTx) {
                 this.setState({txId: data.txId});
+                window.top.postMessage({target: 'lnswap', data: {txId: data.txId, swapId: this.state.swapId, status: functionName + ' pending'}}, '*')
             } else {
                 // sponsored tx - send signed tx to backend to broadcast
                 const serializedTx = data.stacksTransaction.serialize().toString('hex');
@@ -1368,6 +1373,7 @@ class Widget extends React.Component {
           // anchorMode: AnchorMode.Any,
           onFinish: data => {
             console.log('Stacks triggerAllowContractCaller onFinish:', data);
+            window.top.postMessage({target: 'lnswap', data: {txId: data.txId, swapId: this.state.swapId, status: 'triggerAllowContractCaller pending'}}, '*')
             // if(!this.state.sponsoredTx) {
             //     this.setState({txId: data.txId});
             // } else {
@@ -1487,6 +1493,7 @@ class Widget extends React.Component {
             console.log('Stacks triggerStacking onFinish:', data);
             if(!this.state.sponsoredTx) {
                 this.setState({txId: data.txId});
+                window.top.postMessage({target: 'lnswap', data: {txId: data.txId, swapId: this.state.swapId, status: 'triggerStacking pending'}}, '*')
             } else {
                 // sponsored tx - send signed tx to backend to broadcast
                 const serializedTx = data.stacksTransaction.serialize().toString('hex');
