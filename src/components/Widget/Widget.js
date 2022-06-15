@@ -1345,7 +1345,7 @@ class Widget extends React.Component {
     triggerAllowContractCaller = async() => {  
         let thisthing = this;
         let contractAddress = this.state.swapObj.lockupAddress.split(".")[0].toUpperCase();
-        
+
         console.log("triggerAllowContractCaller swapObj: ", this.state.swapObj);     
         console.log(`triggerAllowContractCaller for ${this.state.claimAddress} to ${contractAddress}.${this.state.triggerContractName} on ${JSON.stringify(activeNetwork)} `);
 
@@ -1442,14 +1442,14 @@ class Widget extends React.Component {
         // );
 
         const postConditions = [
-        //   makeContractSTXPostCondition(
-        //     postConditionAddress,
-        //     contractName,
-        //     postConditionCode,
-        //     postConditionAmount
-        //   ),
-        //     // standardNonFungiblePostCondition
-        //     standardStxPostCondition
+          makeContractSTXPostCondition(
+            postConditionAddress,
+            contractName,
+            postConditionCode,
+            postConditionAmount
+          ),
+            // standardNonFungiblePostCondition
+            // standardStxPostCondition
         ];
       
         // console.log("postConditions: " + contractAddress, contractName, postConditionCode, postConditionAmount)
