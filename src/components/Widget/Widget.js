@@ -863,7 +863,7 @@ class Widget extends React.Component {
                     break;
 
                 case "transaction.mempool":
-                    console.log('tx.mempool ', thisthing.state, )
+                    // console.log('tx.mempool ', thisthing.state, )
                     if((thisthing.state.swapType === 'triggerswap') && !thisthing.state.presigned && thisthing.state.sponsoredTx) {
                         // nft purchase with pre-signed tx
                         thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Pre-sign the NFT claim transaction.', statusColor: 'info', showButton: true, showQr: false, buttonText: 'Confirm'});
@@ -887,7 +887,7 @@ class Widget extends React.Component {
 
                 case "invoice.settled":
                     thisthing.setState({showLoading: false, showStatus: true, swapStatus: 'Claim successful 🚀', statusColor: 'success', showButton: false, showComplete: true,});
-                    window.top.postMessage({target: 'lnswap', data: {txId: this.state.txId, swapId: this.state.swapId, status: 'Claim successful'}}, '*')
+                    window.top.postMessage({target: 'lnswap', data: {txId: this.state.txId || '', swapId: this.state.swapId || '', status: 'Claim successful'}}, '*')
                     break;
 
                 case "nft.minted":
@@ -970,7 +970,7 @@ class Widget extends React.Component {
           // anchorMode: AnchorMode.Any,
           onFinish: data => {
             console.log('Stacks claim onFinish:', data);
-            this.setState({txId: data.txId});
+            this.setState({txId: data.txId, swapStatus: 'Claiming STX from swap contract...'});
             window.top.postMessage({target: 'lnswap', data: {txId: data.txId, swapId: this.state.swapId, status: 'claimStx pending'}}, '*')
           },
           onCancel: data => {
@@ -1081,7 +1081,7 @@ class Widget extends React.Component {
           onFinish: data => {
             console.log('Stacks claim onFinish:', data);
             if(!this.state.sponsoredTx) {
-                this.setState({txId: data.txId});
+                this.setState({txId: data.txId, swapStatus: 'Claiming NFT with funds from the swap contract...'});
                 window.top.postMessage({target: 'lnswap', data: {txId: data.txId, swapId: this.state.swapId, status: 'triggerStx pending'}}, '*')
             } else {
                 // sponsored tx - send signed tx to backend to broadcast
@@ -1198,7 +1198,7 @@ class Widget extends React.Component {
           onFinish: data => {
             console.log('Stacks claim onFinish:', data);
             if(!this.state.sponsoredTx) {
-                this.setState({txId: data.txId});
+                this.setState({txId: data.txId, swapStatus: 'Claiming and sending STX from swap contract...'});
                 window.top.postMessage({target: 'lnswap', data: {txId: data.txId, swapId: this.state.swapId, status: 'triggerTransferStx pending'}}, '*')
             } else {
                 // sponsored tx - send signed tx to backend to broadcast
@@ -1332,7 +1332,7 @@ class Widget extends React.Component {
           onFinish: data => {
             console.log('Stacks claim onFinish:', data);
             if(!this.state.sponsoredTx) {
-                this.setState({txId: data.txId});
+                this.setState({txId: data.txId, swapStatus: `Claiming STX to ${this.state.swapType === 'sdcreategame' ? 'create' : 'join'} the game...`});
                 window.top.postMessage({target: 'lnswap', data: {txId: data.txId, swapId: this.state.swapId, status: functionName + ' pending'}}, '*')
             } else {
                 // sponsored tx - send signed tx to backend to broadcast
@@ -1342,7 +1342,7 @@ class Widget extends React.Component {
           },
           onCancel: data => {
             console.log('Stacks claim onCancel:', data);   
-            thisthing.setState({buttonLoading: false});
+            this.setState({buttonLoading: false});
           }
         };
         await openContractCall(txOptions);
@@ -1492,7 +1492,7 @@ class Widget extends React.Component {
           onFinish: data => {
             console.log('Stacks triggerStacking onFinish:', data);
             if(!this.state.sponsoredTx) {
-                this.setState({txId: data.txId});
+                this.setState({txId: data.txId, swapStatus: `Claiming STX to delegate for stacking...`});
                 window.top.postMessage({target: 'lnswap', data: {txId: data.txId, swapId: this.state.swapId, status: 'triggerStacking pending'}}, '*')
             } else {
                 // sponsored tx - send signed tx to backend to broadcast
