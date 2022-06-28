@@ -81,7 +81,7 @@ if(Config.apiUrl.includes("api.lnswap")){
     // console.log('network is mocknet ', mocknet, Config.mocknetUrl)
     activeNetwork = mocknet
 }
-console.log('activeNetwork ', Config.mocknetUrl, activeNetwork);
+console.log('activeNetwork: ', Config.mocknetUrl, activeNetwork);
 
 //  else {
 //     console.log('network is testnet')
@@ -1545,7 +1545,7 @@ class Widget extends React.Component {
             });  
     }
     isTestnet() {
-        return Config.apiUrl.includes("testnet")
+        return (Config.apiUrl.includes("testnet") || Config.mocknetUrl.includes("gitpod"))
     }
 };
 
