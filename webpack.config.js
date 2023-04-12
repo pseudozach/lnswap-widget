@@ -27,7 +27,11 @@ module.exports = (env) => {
             ],
         },
         devServer: {
-            contentBase: bundleOutputDir
+            contentBase: bundleOutputDir,
+            disableHostCheck: true,   // That solved it
+            hot: false,
+            inline: false,
+            liveReload: false
         },
         plugins: [
             new copyWebpackPlugin([{ from: 'demo/' }])
