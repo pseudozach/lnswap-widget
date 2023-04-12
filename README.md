@@ -36,3 +36,4 @@ $ Jest
 # Acknowledgments
 * This widget is based on https://github.com/bjgrosse/simple-embeddable-react-widget  
 * This work is funded by Stacks foundation with a grant.  
+* LNSwap development is funded by Trust Machines.
