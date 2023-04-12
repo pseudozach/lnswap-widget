@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "build": "./node_modules/.bin/webpack --config webpack.config.js --mode production --env.production",
-    "start": "./node_modules/.bin/webpack-dev-server --open --mode development --env.development",
+    "start": "./node_modules/.bin/webpack-dev-server --open --mode development --env.development --host 0.0.0.0",
     "test": "jest"
   },
   "author": "",
